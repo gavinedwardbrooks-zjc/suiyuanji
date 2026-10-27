@@ -1,0 +1,35 @@
+page { background: var(--notebook-bg); }
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 28rpx 22rpx 18rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero .ht { color: var(--notebook-brown); letter-spacing: 2rpx; }
+.ht { font-size: 40rpx; font-weight: 700; color: var(--text-deep); }
+.hs { font-size: 24rpx; color: var(--text-soft); }
+
+.line-list { margin-top: 14rpx; display: flex; flex-direction: column; gap: 12rpx; }
+.line {
+  font-size: 28rpx;
+  color: var(--text-deep);
+  padding: 12rpx 18rpx;
+  background: var(--cream-soft);
+  border-radius: var(--radius);
+  border: 2rpx solid var(--line);
+}
+.line.step-line { background: var(--sticky-blue-bg); border-color: var(--sticky-blue-edge); color: var(--text-deep); font-weight: 600; }
+.line.tip-line { background: var(--sticky-yellow-bg); border-color: var(--sticky-yellow-edge); color: var(--text-deep); }
+
+.edit-area {
+  display: block;
+  width: 100%;
+  min-height: 160rpx;
+  font-size: 28rpx;
+  padding: 20rpx 24rpx;
+  box-sizing: border-box;
+  margin-top: 14rpx;
+  color: var(--text-deep);
+}
+.edit-area.tall { min-height: 320rpx; }
+.err-txt { color: var(--green-deep); }
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+  padding: 50rpx 24rpx;
+}
+.empty-title { font-size: 30rpx; color: var(--text-deep); font-weight: 700; }

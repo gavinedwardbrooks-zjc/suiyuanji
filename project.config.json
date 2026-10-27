@@ -1,0 +1,54 @@
+{
+  "description": "碎愿集 - 微信小程序（云开发）",
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "desktop" },
+      { "type": "folder", "value": "docs" },
+      { "type": "folder", "value": "tests" },
+      { "type": "folder", "value": "scripts" },
+      { "type": "folder", "value": ".workbuddy" },
+      { "type": "folder", "value": ".codebuddy" },
+      { "type": "folder", "value": ".git" },
+      { "type": "folder", "value": "cloudfunctions" },
+      { "type": "file", "value": "PRD-V2.md" },
+      { "type": "file", "value": "README.md" },
+      { "type": "file", "value": "project.private.config.json" }
+    ],
+    "include": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true,
+    "bigPackageSizeSupport": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "compileType": "miniprogram",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "libVersion": "3.0.0",
+  "appid": "wxYOUR_APPID",
+  "projectname": "suiyuanji",
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
+}

@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "card-skeleton": "/components/card-skeleton/card-skeleton",
+    "todo-item": "/components/todo-item/todo-item",
+    "score-picker": "/components/score-picker/score-picker",
+    "mood-weather": "/components/mood-weather/mood-weather",
+    "goal-card": "/components/goal-card/goal-card"
+  },
+  "navigationBarTitleText": "记录今天"
+}

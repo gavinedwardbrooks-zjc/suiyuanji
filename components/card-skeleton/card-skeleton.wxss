@@ -1,0 +1,25 @@
+.sk {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32rpx;
+}
+.head { margin-bottom: 20rpx; }
+
+/* 手绘线稿骨架屏（PRD §4.3 H3：不显示空白、不显示假数据）
+   纯色铅笔线稿 + 闪烁动画，无渐变 */
+.sk-line {
+  height: 26rpx;
+  border-radius: 999rpx;
+  margin-top: 16rpx;
+  background: var(--line);
+  animation: pencil-blink 1.4s ease-in-out infinite;
+}
+.sk-line.w-100 { width: 100%; }
+.sk-line.w-80 { width: 80%; }
+.sk-line.w-60 { width: 60%; }
+.sk-line.w-40 { width: 40%; }
+@keyframes pencil-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}

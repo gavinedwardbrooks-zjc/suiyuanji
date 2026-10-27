@@ -1,0 +1,350 @@
+<view class="page-pad">
+
+  <!-- V1.1 · P1/P2/P2.1：视图模式分支。
+       pending = 身份/角色未确认（中性等待，不渲染编辑表单）；
+       owner = 记录方表单；companion = 陪伴方按日期查看；companion-blocked = 绑定不可用。 -->
+  <block wx:if="{{viewMode === 'pending'}}">
+    <view class="block note-purple fade-in">
+      <!-- P3.0：登录失败/超时 → 明确说明 + 重试；不伪造身份，也不回落到 owner 表单 -->
+      <text wx:if="{{loginState === 'failed' || loginState === 'timeout'}}" class="muted small">连接没有完成，可能是网络不太稳定。</text>
+      <text wx:elif="{{viewerState === 'role_unknown'}}" class="muted small">身份信息不完整，请退出小程序后重新进入。</text>
+      <text wx:else class="muted small">正在确认身份…</text>
+      <view wx:if="{{loginState === 'failed' || loginState === 'timeout'}}" class="candy-btn mt-m" bindtap="onLoginRetry">重新连接</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{viewMode === 'owner'}}">
+
+  <!-- 顶部：日期 + 历史翻页（便签顶部条） -->
+  <view class="hero fade-in">
+    <view class="hero-nav">
+      <view class="nav-btn nav-pill" bindtap="prevDay">‹</view>
+      <view class="hero-mid">
+        <view class="hero-date">{{date}}</view>
+        <view class="hero-sub">写下今天 · 温柔记录</view>
+      </view>
+      <view class="nav-btn nav-pill" bindtap="nextDay">›</view>
+    </view>
+    <view wx:if="{{date !== todayStr}}" class="back-today candy-ghost" bindtap="backToday">回到今天</view>
+  </view>
+
+  <!-- V1.1：一起做的事（双方共同待办 couple_todos）
+       与下面「小事」那张便签（daily_records.todos，按 openid + 日期存快照，
+       只有记录方本人能写）完全分开。
+       双方权限相同：查看 / 添加 / 完成 / 恢复 / 删除。
+       归组依据是「创建日期（北京时间）」；另给「待完成」看跨日期没做完的。 -->
+  <view wx:if="{{todoState !== 'idle' && todoState !== 'blocked'}}" class="block note-green fade-in shared-todo">
+    <view class="row-between">
+      <text class="section-title">一起做的事</text>
+      <text wx:if="{{todoState === 'ready'}}" class="section-sub">{{todoHeadLabel}}</text>
+    </view>
+
+    <view class="todo-scope-row">
+      <view class="scope-chip {{todoScope === 'day' ? 'on' : ''}}" data-scope="day" bindtap="switchTodoScope">这一天</view>
+      <view class="scope-chip {{todoScope === 'open' ? 'on' : ''}}" data-scope="open" bindtap="switchTodoScope">待完成</view>
+    </view>
+
+    <view wx:if="{{todoState === 'loading'}}" class="muted small mt-s">正在读取…</view>
+    <view wx:elif="{{todoState === 'error'}}" class="muted small mt-s">暂时读不到，<text class="share-retry" bindtap="reloadSharedTodos">重试</text></view>
+    <block wx:else>
+      <view wx:if="{{todoTotal === 0}}" class="muted small mt-s">{{todoEmptyText}}</view>
+      <view wx:for="{{shownTodos}}" wx:key="_id" class="shared-todo-row">
+        <!-- 勾选态只用样式表达（不引入 emoji / 特殊符号字体） -->
+        <view class="shared-todo-check tap {{item.done ? 'on' : ''}}" data-id="{{item._id}}" data-done="{{item.done ? 1 : 0}}" bindtap="toggleSharedTodo"></view>
+        <view class="shared-todo-body" data-id="{{item._id}}" data-done="{{item.done ? 1 : 0}}" bindtap="toggleSharedTodo">
+          <text class="shared-todo-text {{item.done ? 'done' : ''}}">{{item.text}}</text>
+          <text class="shared-todo-meta">{{item.meta}}</text>
+        </view>
+        <text class="shared-todo-del tap" data-id="{{item._id}}" data-text="{{item.text}}" bindtap="removeSharedTodo">删除</text>
+      </view>
+      <view wx:if="{{todoHasMore}}" class="shared-todo-more tap" bindtap="toggleSharedExpand">{{todoExpanded ? '收起 ›' : todoMoreLabel}}</view>
+      <!-- 被服务端 100 条上限截断时如实说明，不谎称「全部」 -->
+      <view wx:if="{{todoTruncated}}" class="muted small mt-s">{{todoLimitHint}}</view>
+    </block>
+
+    <!-- 看历史日期时说清楚新增会记到哪一天，不悄悄写进历史 -->
+    <view wx:if="{{todoDayHint}}" class="muted small mt-s">{{todoDayHint}}</view>
+
+    <view class="shared-todo-add">
+      <input class="record-inline-input shared-todo-input" placeholder="一起做点什么？" value="{{todoInput}}" maxlength="40"
+             bindinput="onSharedTodoInput" confirm-type="done" bindconfirm="addSharedTodo"
+             adjust-position="true" cursor-spacing="24" />
+      <view class="shared-todo-btn {{todoBusy ? 'disabled' : ''}}" bindtap="addSharedTodo">添加</view>
+    </view>
+  </view>
+
+  <!-- 今日目标（粉便签） -->
+  <view class="block note-pink fade-in">
+    <view class="row-between" style="margin-bottom:18rpx;">
+      <text class="section-title">今日目标 · 三件大事</text>
+      <text class="section-sub">{{goalDoneCount}}/3 完成</text>
+    </view>
+    <goal-card
+      wx:for="{{goals}}" wx:for-index="gi" wx:key="gi"
+      goal="{{item}}" color="{{colors[gi]}}" index="{{gi}}"
+      bind:input="onGoalInput"
+      bind:toggleDone="onGoalToggleDone"
+      bind:toggleReminder="onGoalToggleReminder"
+      bind:changeTime="onGoalChangeTime" />
+  </view>
+
+  <!-- 小事 todo（黄便签） -->
+  <view class="block note-yellow fade-in">
+    <view class="section-title">小事 · 提醒事项</view>
+    <view class="todo-compose-row mt-m">
+      <input class="record-inline-input todo-compose-input" placeholder="记一件小事，回车添加" value="{{todoDraft}}"
+             bindinput="onTodoDraft" bindconfirm="addTodo" confirm-type="done" adjust-position="true" cursor-spacing="24" />
+      <button class="todo-action-btn" bindtap="addTodo">＋</button>
+    </view>
+    <view class="todo-list">
+      <todo-item
+        wx:for="{{todos}}" wx:for-index="ti" wx:key="ti"
+        item="{{item}}" index="{{ti}}"
+        bind:toggle="toggleTodo" bind:delete="deleteTodo" />
+    </view>
+    <view wx:if="{{todos.length === 0}}" class="todo-empty">还没有小事，添加一件吧</view>
+  </view>
+
+  <!-- 三段日记（蓝便签 + 大圆角奶白 textarea） -->
+  <view class="block note-blue fade-in">
+    <view class="section-title">今天的三段时光</view>
+    <view class="seg">
+      <view class="seg-head">
+        <text class="seg-label">生活</text>
+        <text class="seg-count">{{segCounts.life}} 字</text>
+      </view>
+      <textarea class="seg-area soft-input" placeholder="今天生活里发生了什么" value="{{segments.life}}"
+                data-seg="life" bindinput="onSegInput" auto-height adjust-position="true" cursor-spacing="24" />
+    </view>
+    <view class="seg">
+      <view class="seg-head">
+        <text class="seg-label">工作</text>
+        <text class="seg-count">{{segCounts.work}} 字</text>
+      </view>
+      <textarea class="seg-area soft-input" placeholder="工作上的进展或烦恼" value="{{segments.work}}"
+                data-seg="work" bindinput="onSegInput" auto-height adjust-position="true" cursor-spacing="24" />
+    </view>
+    <view class="seg">
+      <view class="seg-head">
+        <text class="seg-label">成长</text>
+        <text class="seg-count">{{segCounts.growth}} 字</text>
+      </view>
+      <textarea class="seg-area soft-input" placeholder="今天学到了什么" value="{{segments.growth}}"
+                data-seg="growth" bindinput="onSegInput" auto-height adjust-position="true" cursor-spacing="24" />
+    </view>
+    <view wx:if="{{!segments.life && !segments.work && !segments.growth}}" class="no-write">
+      <image class="no-write-ico" src="{{pencilSrc}}" mode="aspectFit" />
+      <text>今天不想写也没关系，留白也是一种记录</text>
+    </view>
+  </view>
+
+  <!-- 心情天气（绿便签） -->
+  <view class="block note-green fade-in">
+    <view class="section-title">心情天气</view>
+    <mood-weather value="{{mood}}" bind:change="onMoodChange" />
+  </view>
+
+  <!-- V1.1 · P3.1：这一天是否分享给 TA（默认关闭；日期级单一开关，三段日记不单独开关） -->
+  <view class="block note-purple fade-in">
+    <view class="row-between">
+      <text class="section-title">分享这一天</text>
+      <text class="section-sub">{{shareState === 'loading' ? '读取中…' : (shareEnabled ? '已分享' : '未分享')}}</text>
+    </view>
+    <view class="muted small mt-s">分享后 TA 可以看到这一天的心情、天气，以及生活、工作、成长三段日记。默认不分享，随时可以关闭。</view>
+    <view wx:if="{{shareState === 'error' && shareNote}}" class="share-warn mt-s">
+      <text>{{shareNote}}</text>
+      <text class="share-retry" bindtap="reloadShare">重试</text>
+    </view>
+    <view wx:elif="{{shareState === 'ready' && !shareCanShare}}" class="share-warn mt-s">这一天的记录还不属于当前绑定关系，暂时无法分享。</view>
+    <!-- 有未保存的草稿时必须说清楚：分享的仍然是「已保存」的那一版 -->
+    <view wx:if="{{dirty}}" class="share-warn mt-s">你还有未保存的修改，TA 看到的仍是已保存的那一版。</view>
+    <view wx:if="{{shareState === 'ready'}}" class="mt-m">
+      <view class="candy-btn share-toggle {{shareBusy || (!shareCanShare && !shareEnabled) ? 'disabled' : ''}}"
+            bindtap="onShareToggle">{{shareBusy ? '处理中…' : (shareEnabled ? '关闭分享' : '开启分享')}}</view>
+    </view>
+  </view>
+
+  <!-- 今日得分（蓝便签 + 醒目主色字） -->
+  <view class="block note-blue fade-in">
+    <view class="section-title">给{{partnerName}}打几分</view>
+    <score-picker value="{{score}}" bind:change="onScoreChange" name="{{partnerName}}" />
+  </view>
+
+  <!-- 心愿（粉便签 + chip 贴纸） -->
+  <view class="block note-pink fade-in">
+    <view class="section-title">今天想吃 / 想做</view>
+    <view class="wish-row mt-m">
+      <view class="wish-icon-wrap">
+        <image class="wish-ico" src="{{wishEatSrc}}" mode="aspectFit" />
+      </view>
+      <input class="record-inline-input" placeholder="今天想吃啥？" value="{{eatInput}}"
+             bindinput="onEatDraft" bindconfirm="addEatByButton" confirm-type="done" adjust-position="true" cursor-spacing="24" />
+      <button class="wish-action-btn" bindtap="addEatByButton">添加</button>
+    </view>
+    <view class="chips">
+      <view wx:for="{{eats}}" wx:for-index="ei" wx:key="ei" class="wchip soft-chip pink">
+        <text class="wchip-text">{{item}}</text>
+        <text class="wchip-del" data-i="{{ei}}" catchtap="deleteEat">×</text>
+      </view>
+    </view>
+    <view class="wish-row" style="margin-top:16rpx;">
+      <view class="wish-icon-wrap">
+        <image class="wish-ico" src="{{wishDoSrc}}" mode="aspectFit" />
+      </view>
+      <input class="record-inline-input" placeholder="今天想做啥？" value="{{doInput}}"
+             bindinput="onDoDraft" bindconfirm="addDoByButton" confirm-type="done" adjust-position="true" cursor-spacing="24" />
+      <button class="wish-action-btn mint" bindtap="addDoByButton">添加</button>
+    </view>
+    <view class="chips">
+      <view wx:for="{{dos}}" wx:for-index="di" wx:key="di" class="wchip soft-chip green">
+        <text class="wchip-text">{{item}}</text>
+        <text class="wchip-del" data-i="{{di}}" catchtap="deleteDo">×</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 保存：专用 record-save-btn（独立尺寸，不继承通用按钮 class 的圆钮/阴影） -->
+  <view class="save-bar">
+    <view class="record-save-btn {{saving ? 'disabled' : ''}}" aria-disabled="{{saving}}" bindtap="onSaveTap">{{saving ? '保存中…' : '保存今日'}}</view>
+    <text wx:if="{{savedTip}}" class="saved-tip">{{savedTip}}</text>
+  </view>
+
+  </block>
+
+  <block wx:elif="{{viewMode === 'companion'}}">
+    <!-- 陪伴方记录页：按日期查看 TA 主动共享的内容，只读，无任何编辑/保存入口 -->
+
+    <!-- 日期导航 -->
+    <view class="hero fade-in">
+      <view class="hero-nav">
+        <view class="nav-btn nav-pill" bindtap="pvPrev">‹</view>
+        <picker mode="date" value="{{date}}" end="{{todayStr}}" bindchange="onPvDate">
+          <view class="hero-mid">
+            <view class="hero-date">{{date}}</view>
+            <view class="hero-sub">只看 TA 共享的部分</view>
+          </view>
+        </picker>
+        <view class="nav-btn nav-pill" bindtap="pvNext">›</view>
+      </view>
+      <view wx:if="{{date !== todayStr}}" class="back-today candy-ghost" bindtap="pvToday">回到今天</view>
+    </view>
+
+    <!-- V1.1：一起做的事（双方共同待办）—— 属于这段关系，不属于某一方的日记内容，
+         双方都能读写；这一天是否分享，都不影响这张卡片。 -->
+    <view wx:if="{{todoState !== 'idle' && todoState !== 'blocked'}}" class="block note-green fade-in shared-todo">
+      <view class="row-between">
+        <text class="section-title">一起做的事</text>
+        <text wx:if="{{todoState === 'ready'}}" class="section-sub">{{todoHeadLabel}}</text>
+      </view>
+
+      <view class="todo-scope-row">
+        <view class="scope-chip {{todoScope === 'day' ? 'on' : ''}}" data-scope="day" bindtap="switchTodoScope">这一天</view>
+        <view class="scope-chip {{todoScope === 'open' ? 'on' : ''}}" data-scope="open" bindtap="switchTodoScope">待完成</view>
+      </view>
+
+      <view wx:if="{{todoState === 'loading'}}" class="muted small mt-s">正在读取…</view>
+      <view wx:elif="{{todoState === 'error'}}" class="muted small mt-s">暂时读不到，<text class="share-retry" bindtap="reloadSharedTodos">重试</text></view>
+      <block wx:else>
+        <view wx:if="{{todoTotal === 0}}" class="muted small mt-s">{{todoEmptyText}}</view>
+        <view wx:for="{{shownTodos}}" wx:key="_id" class="shared-todo-row">
+          <view class="shared-todo-check tap {{item.done ? 'on' : ''}}" data-id="{{item._id}}" data-done="{{item.done ? 1 : 0}}" bindtap="toggleSharedTodo"></view>
+          <view class="shared-todo-body" data-id="{{item._id}}" data-done="{{item.done ? 1 : 0}}" bindtap="toggleSharedTodo">
+            <text class="shared-todo-text {{item.done ? 'done' : ''}}">{{item.text}}</text>
+            <text class="shared-todo-meta">{{item.meta}}</text>
+          </view>
+          <text class="shared-todo-del tap" data-id="{{item._id}}" data-text="{{item.text}}" bindtap="removeSharedTodo">删除</text>
+        </view>
+        <view wx:if="{{todoHasMore}}" class="shared-todo-more tap" bindtap="toggleSharedExpand">{{todoExpanded ? '收起 ›' : todoMoreLabel}}</view>
+        <view wx:if="{{todoTruncated}}" class="muted small mt-s">{{todoLimitHint}}</view>
+      </block>
+
+      <view wx:if="{{todoDayHint}}" class="muted small mt-s">{{todoDayHint}}</view>
+
+      <view class="shared-todo-add">
+        <input class="record-inline-input shared-todo-input" placeholder="一起做点什么？" value="{{todoInput}}" maxlength="40"
+               bindinput="onSharedTodoInput" confirm-type="done" bindconfirm="addSharedTodo"
+               adjust-position="true" cursor-spacing="24" />
+        <view class="shared-todo-btn {{todoBusy ? 'disabled' : ''}}" bindtap="addSharedTodo">添加</view>
+      </view>
+    </view>
+
+    <view wx:if="{{pvState === 'loading'}}" class="block note-purple fade-in">
+      <text class="muted small">正在读取这一天…</text>
+    </view>
+
+    <view wx:elif="{{pvState === 'blocked'}}" class="block note-yellow fade-in">
+      <text class="section-title">绑定未生效</text>
+      <view class="muted small mt-s">当前的绑定关系不可用，暂时看不到共享内容。</view>
+      <view class="candy-btn mt-m" bindtap="goOurs">去「我们」页</view>
+    </view>
+
+    <view wx:elif="{{pvState === 'error'}}" class="block note-yellow fade-in">
+      <text class="section-title">暂时读不到内容</text>
+      <view class="muted small mt-s">网络或服务好像不太稳定，稍后再试。</view>
+      <view class="candy-btn mt-m" bindtap="reloadPv">重试</view>
+    </view>
+
+    <view wx:elif="{{pvState === 'empty'}}" class="block note-purple fade-in">
+      <text class="muted small">这一天没有可查看的共享内容。</text>
+    </view>
+
+    <block wx:else>
+      <!-- 这天对方的评分（服务端返回才有；不返回就不显示，不推断） -->
+      <view wx:if="{{pvScore}}" class="block note-pink fade-in">
+        <text class="section-title">这天的评分</text>
+        <score-picker value="{{pvScore}}" readonly="true" name="{{pvName}}" />
+      </view>
+
+      <!-- V1.1 · P3.1：主动共享出来的这一天。pvShared 为空时这里一条都不渲染，
+           不显示占位日记、也不暗示对方写过什么。 -->
+      <view wx:if="{{pvShared}}" class="block note-pink fade-in">
+        <view class="row-between">
+          <text class="section-title">这一天的心情</text>
+          <text class="section-sub">{{pvMood}} · {{pvWeather}}</text>
+        </view>
+        <view class="share-seg mt-m">
+          <view class="share-seg-label">生活</view>
+          <view class="share-seg-text">{{pvShared.segments.life ? pvShared.segments.life : '这一天没有写生活'}}</view>
+        </view>
+        <view class="share-seg">
+          <view class="share-seg-label">工作</view>
+          <view class="share-seg-text">{{pvShared.segments.work ? pvShared.segments.work : '这一天没有写工作'}}</view>
+        </view>
+        <view class="share-seg">
+          <view class="share-seg-label">成长</view>
+          <view class="share-seg-text">{{pvShared.segments.growth ? pvShared.segments.growth : '这一天没有写成长'}}</view>
+        </view>
+      </view>
+
+      <!-- 伙伴版小结（白名单字段） -->
+      <view wx:if="{{pvSummary}}" class="block note-green fade-in">
+        <text class="section-title">这天的小结</text>
+        <view class="mt-s"><text>{{pvSummary}}</text></view>
+      </view>
+
+      <!-- 这天的愿望：只展示**属于这一天**的心愿（归属日期由服务端按记录日期判定并筛好，
+           前端不再自己算日期）。之前取的是这段关系里全部 pending 心愿，
+           导致历史心愿每天重复出现。今天没新增就老实说没有，不拿旧心愿凑数。 -->
+      <view class="block note-yellow fade-in">
+        <text class="section-title">这天的愿望</text>
+        <view wx:if="{{pvDayWishes.length === 0}}" class="muted small mt-s">这天还没有写下愿望</view>
+        <view wx:for="{{pvDayWishes}}" wx:key="_id" class="row-between fade-in" style="margin-top:12rpx;">
+          <view class="row">
+            <view class="soft-chip {{item.type === 'eat' ? 'pink' : 'green'}}">{{item.type === 'eat' ? '想吃' : '想做'}}</view>
+            <text style="margin-left:12rpx;">{{item.text}}</text>
+          </view>
+          <text wx:if="{{item.status === 'done_by_partner'}}" class="muted small">已安排</text>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <block wx:elif="{{viewMode === 'companion-blocked'}}">
+    <view class="block note-yellow fade-in">
+      <text class="section-title">绑定未生效</text>
+      <view class="muted small mt-s">当前没有可用的绑定关系，看不到共享内容，也无法在这里记录。</view>
+      <view class="candy-btn mt-m" bindtap="goOurs">去「我们」页</view>
+    </view>
+  </block>
+
+</view>

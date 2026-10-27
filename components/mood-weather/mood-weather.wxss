@@ -1,0 +1,25 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 22rpx;
+  border-radius: 999rpx;
+  background: var(--card);
+  border: 3rpx solid var(--line);
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  transition: all .2s var(--ease);
+}
+.chip.sm { padding: 10rpx 18rpx; font-size: 22rpx; }
+.chip.on {
+  background: var(--yellow);
+  color: var(--ink);
+  border-color: var(--yellow-deep);
+  transform: scale(1.05);
+}
+.emo {
+  width: 44rpx;
+  height: 44rpx;
+  flex-shrink: 0;
+}
+.chip.sm .emo { width: 38rpx; height: 38rpx; }

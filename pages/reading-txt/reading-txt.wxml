@@ -1,0 +1,43 @@
+<!-- pages/reading-txt/reading-txt.wxml · 本机 TXT 阅读页（S5）
+     只渲染「当前这一页」（8KB 级），绝不整文件渲染。 -->
+<view class="txt-page page-pad">
+
+  <view wx:if="{{mode === 'loading'}}" class="state-box">
+    <text class="st-title">正在读取本机文件…</text>
+  </view>
+
+  <view wx:elif="{{mode === 'error'}}" class="state-box">
+    <text class="st-icon">📄</text>
+    <text class="st-title">{{errorText}}</text>
+    <text wx:if="{{missing}}" class="st-sub">记录和文件都不会被自动删除，重新导入同一本书即可继续阅读。</text>
+    <view class="st-actions">
+      <view class="candy-btn" bindtap="retry">重试</view>
+      <view class="candy-btn ghost" bindtap="backToShelf">返回书架</view>
+    </view>
+  </view>
+
+  <block wx:else>
+    <view class="txt-head">
+      <text class="tb-title ellipsis">{{bookName}}</text>
+      <text class="tb-sub">{{sizeText}} · 共 {{pageCount}} 页</text>
+      <text wx:if="{{restored}}" class="tb-resumed">已回到上次读到的位置</text>
+    </view>
+
+    <view wx:if="{{encodingWarning}}" class="warn-bar">
+      这个文件可能不是 UTF-8 编码，部分字符会显示异常（不会修改你的文件）
+    </view>
+
+    <scroll-view scroll-y class="txt-scroll" scroll-top="{{scrollTop}}">
+      <text class="txt-body">{{pageText}}</text>
+    </scroll-view>
+
+    <view class="txt-bar">
+      <view class="bar-btn {{hasPrev ? '' : 'off'}}" bindtap="prevPage">上一页</view>
+      <text class="bar-idx">{{pageIndex + 1}} / {{pageCount}}</text>
+      <view class="bar-btn {{hasNext ? '' : 'off'}}" bindtap="nextPage">下一页</view>
+      <input class="bar-jump" type="number" value="{{jumpValue}}" placeholder="页码" bindinput="onJumpInput" bindconfirm="jumpToPage" />
+      <view class="bar-btn" bindtap="jumpToPage">跳转</view>
+    </view>
+  </block>
+
+</view>

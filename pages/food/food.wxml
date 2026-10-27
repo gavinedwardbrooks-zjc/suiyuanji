@@ -1,0 +1,58 @@
+<view class="page-pad">
+
+  <view class="hero fade-in">
+    <view class="ht">今天吃什么</view>
+    <view class="hs">1 小荤 + 1 素菜 + 1 汤</view>
+  </view>
+
+  <!-- 未 seed：空状态（不显示假菜谱） -->
+  <view wx:if="{{!ready && !loading}}" class="note-stripe note-yellow mt-m empty-state">
+    <text class="empty-title">菜谱库还没准备好</text>
+    <text class="empty-sub">开发模式请在云函数测试页调用 seedRecipes</text>
+  </view>
+
+  <block wx:else>
+    <view class="note-pink mt-m center-col" style="padding:32rpx 24rpx;">
+      <view class="candy-btn random-btn {{loading ? 'disabled' : ''}}" bindtap="randomMeal">{{loading ? '随机中…' : '不知道吃什么，随机一下'}}</view>
+      <text wx:if="{{error}}" class="err-txt">{{error}}</text>
+    </view>
+
+    <!-- 随机结果三卡 -->
+    <block wx:if="{{meal}}">
+      <view class="meal-card note-pink mt-m" data-id="{{meal.meat._id}}" bindtap="goRecipe">
+        <view class="note-num mc-cat">荤</view>
+        <view class="mc-body">
+          <text class="mc-label">小荤</text>
+          <text class="mc-name">{{meal.meat.name}}</text>
+        </view>
+      </view>
+      <view class="meal-card note-blue mt-m" data-id="{{meal.vegetable._id}}" bindtap="goRecipe">
+        <view class="note-num mc-cat">素</view>
+        <view class="mc-body">
+          <text class="mc-label">素菜</text>
+          <text class="mc-name">{{meal.vegetable.name}}</text>
+        </view>
+      </view>
+      <view class="meal-card note-yellow mt-m" data-id="{{meal.soup._id}}" bindtap="goRecipe">
+        <view class="note-num mc-cat">汤</view>
+        <view class="mc-body">
+          <text class="mc-label">汤</text>
+          <text class="mc-name">{{meal.soup.name}}</text>
+        </view>
+      </view>
+      <!-- 就吃这个：确定的是「这一组」菜（1 荤 + 1 素 + 1 汤）。
+           只有记录方（her）能确认；him 只推荐不确认，服务端还会再拒一次。 -->
+      <view wx:if="{{isHer}}" class="mt-m center-col confirm-box">
+        <view wx:if="{{isConfirmedCurrent}}" class="candy-btn confirm-btn confirmed">今天已确定</view>
+        <view wx:else class="candy-btn confirm-btn {{confirming ? 'disabled' : ''}}" bindtap="confirmMeal">{{confirming ? '确定中…' : '就吃这个'}}</view>
+        <text wx:if="{{confirmedName && !isConfirmedCurrent}}" class="confirm-tip">今天已确定：{{confirmedName}}</text>
+        <text wx:if="{{confirmError}}" class="err-txt">{{confirmError}}</text>
+      </view>
+
+      <view class="mt-m center-col">
+        <view class="candy-ghost" bindtap="randomMeal">再随机一次</view>
+      </view>
+    </block>
+  </block>
+
+</view>

@@ -1,0 +1,70 @@
+<view class="page-pad">
+
+  <view class="hero fade-in">
+    <view class="ht">我的</view>
+  </view>
+
+  <!-- 情侣绑定（M1 Binding UI） -->
+  <view class="card block">
+    <text class="section-title">我的小档案 · 我们的关系</text>
+
+    <!-- 已绑定：关系状态 + 解绑（解绑完善 · V1.0） -->
+    <block wx:if="{{bound && !statusLoading}}">
+      <text class="muted small" style="margin-top:14rpx;display:block;">已绑定情侣关系，对方可以查看你授权共享的内容（评分、完成的目标/小事、共享心愿、经期预计）。</text>
+      <view class="btn-ghost" bindtap="unbindCouple" style="margin-top:20rpx;">解除绑定</view>
+    </block>
+
+    <!-- 未绑定：生成码 + 输入码（真机 Hotfix：输入框不可裁切） -->
+    <block wx:elif="{{!statusLoading}}">
+      <text class="muted small" style="margin-top:14rpx;display:block;">一方生成配对码，另一方输入，确认后就能一起使用。</text>
+      <text class="muted small" style="margin-top:14rpx;display:block;">你的绑定码（可复制发给对方）</text>
+      <view class="bind-code-box">
+        <text class="code mono">{{bindCode || '—'}}</text>
+        <view class="mini-btn" bindtap="copyBindCode">复制</view>
+        <view class="mini-btn" bindtap="genCode">生成</view>
+      </view>
+      <text class="muted small" style="margin-top:24rpx;display:block;">输入对方的绑定码完成绑定：</text>
+      <view class="bind-block">
+        <input class="bind-input-field" placeholder="如 XZ-ABCDEF12" value="{{inputCode}}" bindinput="onInput" />
+        <button class="bind-btn" bindtap="bind">绑定</button>
+      </view>
+    </block>
+
+    <!-- pending 状态区 -->
+    <view wx:if="{{pending}}" class="pending-card">
+      <block wx:if="{{pending.state === 'waiting_claim'}}">
+        <text class="muted small">绑定码已生成，等对方输入后即可确认</text>
+        <view class="btn-ghost" bindtap="cancelPending" style="margin-top:16rpx;">取消本次绑定</view>
+      </block>
+      <block wx:elif="{{pending.state === 'confirm_needed'}}">
+        <text class="muted small">对方已输入你的绑定码，是否同意绑定？</text>
+        <view class="row" style="gap:16rpx;margin-top:16rpx;">
+          <view class="btn-primary flex-1" data-accept="1" bindtap="confirmPending">同意</view>
+          <view class="btn-ghost flex-1" data-accept="0" bindtap="confirmPending">拒绝</view>
+        </view>
+      </block>
+      <block wx:elif="{{pending.state === 'waiting_confirm'}}">
+        <text class="muted small">已提交绑定码，等待对方确认</text>
+      </block>
+    </view>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">消息提醒</text>
+    <text class="muted small">开启后，目标到点未完成会收到温柔提醒，每晚收到 AI 小结。</text>
+    <view class="btn-ghost" bindtap="authSubscribe" style="margin-top:18rpx;">开启订阅消息</view>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">关于</text>
+    <text class="muted small">无广告的陪伴小程序，记录属于你们的点滴。多读书，少刷短视频，温柔地记录每一天。</text>
+  </view>
+
+  <!-- 隐私与数据（V1.0：隐私政策入口 + 注销删除） -->
+  <view class="card block">
+    <text class="section-title">隐私与数据</text>
+    <view class="btn-ghost" bindtap="goPrivacy" style="margin-top:18rpx;">隐私说明</view>
+    <view class="btn-ghost" bindtap="deleteAccount" style="margin-top:18rpx;">注销账号 · 删除我的数据</view>
+  </view>
+
+</view>

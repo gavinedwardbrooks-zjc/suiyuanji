@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "score-picker": "/components/score-picker/score-picker"
+  },
+  "navigationBarTitleText": "我们"
+}

@@ -1,0 +1,42 @@
+<view class="page-pad">
+
+  <view class="hero">
+    <view class="ht">隐私说明</view>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">我们如何处理你的数据</text>
+    <text class="p-line muted small">「碎愿集」是一款情侣记录小程序。本页如实说明数据的收集、存储与使用方式，不构成任何合规认证或承诺。</text>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">一、我们收集什么</text>
+    <text class="p-line muted small">微信登录标识（openid）：用于区分不同用户，不读取你的微信昵称、头像。</text>
+    <text class="p-line muted small">你主动填写的内容：日记、目标、心愿、经期记录、阅读记录、书籍等。</text>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">二、数据存在哪里</text>
+    <text class="p-line muted small">所有数据存储在微信云开发（腾讯云）提供的云数据库中，仅通过微信云函数访问。</text>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">三、谁可以看到你的数据</text>
+    <text class="p-line muted small">你自己：可查看自己的全部记录。</text>
+    <text class="p-line muted small">你的情侣：仅在你绑定后、且你主动授权共享的内容（评分、完成的目标/小事、共享心愿、经期预计）。经期数据默认不共享，需你手动开启。</text>
+    <text class="p-line muted small">我们不会把你的数据用于广告，也不会提供给第三方。</text>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">四、你可以做什么</text>
+    <text class="p-line muted small">在「我的」页解除绑定，随时停止与对方共享。</text>
+    <text class="p-line muted small">在「我的」页注销账号，删除你的个人数据（日记、心愿、经期、画像、书籍等）。</text>
+    <text class="p-line muted small">共享数据（关系、留言、周报）因涉及双方，注销时只解除绑定、不物理删除。</text>
+  </view>
+
+  <view class="card block">
+    <text class="section-title">五、说明</text>
+    <text class="p-line muted small">本页如实描述数据处理方式。如有疑问，可通过小程序内反馈联系我们。</text>
+  </view>
+
+</view>

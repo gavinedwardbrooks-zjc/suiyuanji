@@ -1,0 +1,117 @@
+/* ============================================================
+   主题变量 —— 手绘温暖风（PRD v0.6 §3.1 设计令牌，唯一色值来源）
+   硬约束：全站颜色必须取自此文件，禁止散落硬编码色值
+
+   重要（2026-08-26 真机修复）：变量必须定义在 `page` 选择器下。
+   微信小程序 WXSS 的 `:root` 伪类在真机渲染引擎不匹配任何节点
+   （小程序没有 <html> 文档根，页面根是 page），导致全部 var()
+   声明 invalid → 按钮/卡片背景透明不可见。
+
+   2026-08-28 UI 治愈系重塑：新增 macaron / sticky-note / cream / pastel
+   完整梯度，全部 ADD-ONLY，旧 token 一字未改。
+   ============================================================ */
+page {
+  /* ---- 基础（PRD §3.1，旧保留） ---- */
+  --bg: #FBF6EF;            /* 背景：暖米色纸感底 */
+  --card: #FFFDF9;          /* 卡片底 */
+  --card-warm: #FFF7EC;     /* 暖色卡片底 */
+  --primary: #E8899C;       /* 主色：温柔粉 */
+  --secondary: #B6A698;     /* 辅色：暖灰棕 */
+  --ink: #4A3F35;           /* 文字主：暖深棕（禁止纯黑 #000） */
+
+  /* ---- 强调三色（区分度用，旧保留） ---- */
+  --pink: #FFC9D4;
+  --pink-deep: #E8899C;
+  --yellow: #FFE9A8;
+  --yellow-deep: #F2C14E;
+  --blue: #DCE9DF;
+  --notebook-bg: #F8F3EA;
+  --notebook-card: #FFF9F2;
+  --notebook-pink: #EFA7B8;
+  --notebook-dusty: #D998A4;
+  --notebook-sage: #B8C7B0;
+  --notebook-brown: #8C6F5A;
+  --notebook-line: #E7D7C7;
+  --blue-deep: #6FB7D4;
+  --green: #C7E7C2;
+  --green-deep: #7FBF77;
+
+  /* ---- 文字层级（保留） ---- */
+  --ink-soft: #9C8B80;
+  --ink-faint: #C9BDB2;
+
+  /* ---- 描边 + 阴影（保留） ---- */
+  --line: #EFE6DA;
+  --line-strong: #E3D5C5;
+  --shadow: 0 10rpx 30rpx rgba(180, 150, 120, 0.14);
+  --shadow-sm: 0 4rpx 14rpx rgba(180, 150, 120, 0.10);
+  --shadow-pink: 0 10rpx 26rpx rgba(232, 137, 156, 0.22);
+
+  /* ---- 圆角（保留） ---- */
+  --radius: 24rpx;
+  --radius-sm: 18rpx;
+  --radius-pill: 999rpx;
+
+  /* ---- 缓动 ---- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* ===========================================================
+     以下为 2026-08-28 视觉治愈系重塑新增 token（绝对 ADD-ONLY）
+     风格关键词：奶油底 / 马卡龙色系 / 贴纸偏移 / 手绘便签 /
+     大圆角 / 软糖按钮 / 蜡笔阴影
+     =========================================================== */
+
+  /* 奶油底：页面/区域底纹，比 --bg 略深一点点温暖感 */
+  --cream-bg: #FBF5EA;          /* 主奶油底，比 --bg 略深一点点（手账本底） */
+  --cream-soft: #FFF9F0;        /* 浅奶油，区块底 */
+  --cream-paper: #FAEFD9;       /* 便签纸感（稍深，最适合 Hero 大区块） */
+
+  /* 便签条带主色（参考图三色便签：粉/黄/蓝/绿，区别于已有三色——-bg 档比 -深色档更柔和） */
+  --sticky-pink-bg: #FFE0E6;    /* 便签粉色（比 --pink 略浅） */
+  --sticky-pink-edge: #F2B6C2;  /* 便签粉描边 */
+  --sticky-yellow-bg: #FFEDB6;
+  --sticky-yellow-edge: #F0CC75;
+  --sticky-blue-bg: #D5EDF6;
+  --sticky-blue-edge: #9DC9DE;
+  --sticky-green-bg: #D6EFD0;
+  --sticky-green-edge: #92C688;
+  --sticky-purple-bg: #E8DEF5;
+  --sticky-purple-edge: #B89DD8;
+
+  /* 马卡龙辅助（更柔和的奶油色，比 sticky-bg 略深） */
+  --macaron-pink: #F7D0DA;
+  --macaron-yellow: #FCE5A6;
+  --macaron-blue: #CDE7F2;
+  --macaron-green: #CDE7C8;
+
+  /* 糖感按钮色（糖果按钮专属主色） */
+  --candy-pink: #F2A9B9;        /* 主按钮亮一档 */
+  --candy-pink-deep: #E07F95;   /* 主按钮深一档 */
+  --candy-mint: #A6D9C5;
+  --candy-mint-deep: #6BBF9F;
+
+  /* 手绘奶油文字色（避免纯黑） */
+  --text-deep: #3D332B;         /* 大数字/标题，比 --ink 更深 */
+  --text-soft: #8E7E72;         /* 弱化说明 */
+  --text-faint: #BCAEA0;        /* placeholder */
+
+  /* 圆角扩展（治愈系偏胖） */
+  --radius-soft: 32rpx;         /* 大圆角卡片（Hero/卡片主圆角） */
+  --radius-chunky: 40rpx;       /* 胖糖按钮（更胖圆角） */
+  --radius-noodle: 56rpx;       /* 最胖糖果（特殊主 CTA） */
+
+  /* 阴影扩展 */
+  --shadow-paper: 0 14rpx 36rpx rgba(180, 150, 120, 0.10);
+  --shadow-sticker: 0 8rpx 0 rgba(74, 63, 53, 0.18);  /* 贴纸实心偏移 */
+  --shadow-candy: 0 8rpx 0 var(--candy-pink-deep);     /* 主按钮糖果实心阴影 */
+  --shadow-candy-mint: 0 8rpx 0 var(--candy-mint-deep);
+  --shadow-soft-ink: 0 6rpx 18rpx rgba(74, 63, 53, 0.06);
+
+  /* 装饰边线（手绘感 2rpx-3rpx，颜色比 --line-strong 稍深） */
+  --line-sketch: #D9C7B3;
+
+  /* 插画底色（Hero 大插画里的浅色块） */
+  --illustr-paper: #FCF1DA;
+  --illustr-sky: #E8F2F6;
+  --illustr-grass: #DDEBD3;
+}

@@ -1,0 +1,33 @@
+node_modules/
+.DS_Store
+.workbuddy/
+.codebuddy/
+project.private.config.json
+
+# 桌面端（Tauri，含旧品牌 + 硬编码云端点，不公开）
+desktop/
+src-tauri/target/
+
+# ===== 开源整理新增 =====
+# 环境变量（本地私有；.env.example 为可提交模板）
+.env
+.env.*
+!.env.example
+
+# 日志与临时文件
+*.log
+logs/
+*.tmp
+*.swp
+*.swo
+
+# IDE 配置
+.vscode/
+.idea/
+
+# 系统文件
+Thumbs.db
+desktop.ini
+
+# 内部设计参考图（含 AI 水印，无再分发权，不公开）
+docs/style-references/

@@ -1,0 +1,97 @@
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 20rpx 0; }
+.rt { font-size: 38rpx; font-weight: 700; color: var(--text-deep); }
+.rs { font-size: 24rpx; color: var(--text-soft); }
+
+.import-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 36rpx 28rpx;
+}
+.import-art { display: flex; justify-content: center; }
+.deco-book { width: 140rpx; height: 100rpx; opacity: 0.78; }
+.import-card { background: var(--cream-paper); border: 2rpx dashed var(--line-sketch); box-shadow: var(--shadow-paper); }
+.book-list
+ { display: flex; flex-direction: column; gap: 20rpx; }
+.book {
+  padding: 24rpx;
+  align-items: center;
+  gap: 20rpx;
+  cursor: pointer;
+}
+.cover {
+  width: 88rpx; height: 88rpx;
+  border-radius: 20rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44rpx;
+  flex-shrink: 0;
+  background: var(--cream-paper);
+}
+.cover-svg { width: 64rpx; height: 64rpx; }
+.info { display: flex; flex-direction: column; gap: 10rpx; min-width: 0; }
+.book-title-row { display: flex; align-items: center; gap: 10rpx; min-width: 0; }
+.b-name { font-size: 30rpx; font-weight: 700; color: var(--text-deep); }
+.file-sticker { flex-shrink: 0; padding: 4rpx 10rpx; border-radius: 8rpx; background: var(--sticky-pink-bg); color: var(--pink-deep); font-size: 18rpx; font-weight: 700; letter-spacing: 1rpx; }
+.b-bar { height: 14rpx; background: var(--cream-paper); border-radius: 999rpx; overflow: hidden; border: 2rpx solid var(--line); }
+.b-fill { height: 100%; border-radius: 999rpx; transition: width .4s var(--ease); }
+.b-sub { font-size: 22rpx; color: var(--text-soft); }
+.b-go { font-size: 44rpx; color: var(--text-faint); flex-shrink: 0; }
+/* S4：本机书籍删除入口。视觉仍为小型图标按钮，宽度/高度与封面一致（88rpx，44px），
+   保证点击区域达标，且不高于封面故不改变卡片整体结构与高度。 */
+.b-del {
+  flex-shrink: 0;
+  width: 88rpx; height: 88rpx;
+  margin-left: 4rpx;
+  border: 2rpx solid var(--notebook-line);
+  border-radius: 24rpx;
+  background: var(--card);
+  color: var(--pink-deep);
+  font-size: 38rpx; font-weight: 700; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.b-del:active { opacity: .55; }
+/* 旧云端书籍「保存到本机」入口。尺寸与封面同高（88rpx，44px 达标点击区），
+   不改变卡片整体结构与高度；只有存在云端文件（fileID）的记录才会渲染。 */
+.b-get {
+  flex-shrink: 0;
+  width: 96rpx; height: 88rpx;
+  margin-left: 4rpx;
+  border: 2rpx solid var(--notebook-line);
+  border-radius: 24rpx;
+  background: var(--card);
+  color: var(--pink-deep);
+  font-size: 20rpx; font-weight: 700; line-height: 1.15;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.b-get:active { opacity: .55; }
+.b-get.done { color: var(--text-soft); border-color: var(--line); }
+/* S6：旧云端书籍的删除入口。与「存本机」并列显示（两个按钮都是 catchtap，
+   互不触发、也都不触发整个卡片的 openBook）。
+   尺寸与封面同高（88rpx，44px 达标点击区）：固定宽高 + flex-shrink:0，
+   窄屏下只是把书名挤短（.b-name 已有 ellipsis），绝不重叠或溢出。
+   同一位置不再放装饰性箭头 ›，把水平空间让给书名。 */
+.b-remove {
+  flex-shrink: 0;
+  width: 88rpx; height: 88rpx;
+  margin-left: 8rpx;
+  border: 2rpx solid var(--notebook-line);
+  border-radius: 24rpx;
+  background: var(--card);
+  color: var(--pink-deep);
+  font-size: 22rpx; font-weight: 700; line-height: 1.15;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center;
+}
+.b-remove:active { opacity: .55; }
+
+.candy-btn { display: block; text-align: center; }
+.cover-glyph { font-size: 20rpx; font-weight: 700; color: var(--notebook-brown); letter-spacing: 1rpx; }
+.local-storage-note { margin-top: 14rpx; padding: 18rpx 20rpx; border: 2rpx dashed var(--line-sketch); border-radius: 20rpx; background: var(--cream-paper); }
+.lsn-title { display: block; font-size: 22rpx; color: var(--text-deep); font-weight: 700; }
+.lsn-bar { height: 8rpx; margin: 10rpx 0; border-radius: 999rpx; background: var(--sticky-yellow-bg); overflow: hidden; }
+.lsn-fill { height: 100%; border-radius: 999rpx; background: var(--pink-deep); transition: width .4s var(--ease); }
+.lsn-sub { display: block; font-size: 20rpx; color: var(--text-soft); }
+.lsn-warn { display: block; margin-top: 6rpx; font-size: 20rpx; color: var(--pink-deep); }
+.entry-grid { display: flex; gap: 18rpx; }.entry-card { flex: 1; padding: 26rpx 20rpx; border-radius: 26rpx; box-shadow: var(--shadow-paper); border: 2rpx solid var(--notebook-line); }.book-entry { background: var(--sticky-yellow-bg); }.write-entry { background: var(--sticky-pink-bg); }.entry-mark { display: block; font-size: 42rpx; color: var(--notebook-brown); }.entry-title { display: block; font-size: 30rpx; font-weight: 700; color: var(--text-deep); }.entry-sub, .section-note, .writing-meta { display: block; color: var(--text-soft); font-size: 22rpx; }.legacy-entry { margin: 18rpx 0; text-align: center; color: var(--text-soft); font-size: 22rpx; text-decoration: underline; }.section-heading { display: flex; justify-content: space-between; align-items: baseline; color: var(--text-deep); font-size: 30rpx; font-weight: 700; }.writing-item { margin-top: 14rpx; padding: 22rpx; display: flex; justify-content: space-between; align-items: center; }.writing-main { min-width: 0; }.writing-name { display: block; font-size: 28rpx; color: var(--text-deep); }.empty-journal { margin-top: 14rpx; padding: 30rpx; text-align: center; color: var(--text-soft); border: 2rpx dashed var(--notebook-line); border-radius: 24rpx; }

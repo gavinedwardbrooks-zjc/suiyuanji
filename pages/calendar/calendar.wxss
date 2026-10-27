@@ -1,0 +1,143 @@
+page { background: var(--notebook-bg); }
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 28rpx 22rpx 18rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero .cal-title { letter-spacing: 2rpx; color: var(--notebook-brown); }
+.cal-title { font-size: 38rpx; font-weight: 700; color: var(--text-deep); }
+.cal-sub { font-size: 24rpx; color: var(--text-soft); }
+
+.month-bar { display: flex; align-items: center; justify-content: space-between; }
+.arrow.nav-pill, .month-bar .nav-pill {
+  width: 72rpx; height: 72rpx;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44rpx;
+  color: var(--text-deep);
+  border: 3rpx solid var(--line-sketch);
+}
+.month-text { font-size: 32rpx; font-weight: 700; color: var(--text-deep); }
+
+.week-row { display: flex; }
+.wk { flex: 1; text-align: center; font-size: 24rpx; color: var(--text-soft); padding: 16rpx 0; }
+
+.grid {
+  display: flex; flex-wrap: wrap;
+  background: var(--sticky-yellow-bg);
+  border: 3rpx solid var(--sticky-yellow-edge);
+  border-radius: var(--radius-soft);
+  padding: 12rpx 8rpx;
+  box-shadow: var(--shadow-paper);
+}
+.cell {
+  width: 14.28%;
+  height: 88rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.cell.blank { visibility: hidden; }
+.cell.today .d {
+  background: var(--candy-pink);
+  color: #FFFDF9;
+  border-radius: 50%;
+  width: 52rpx; height: 52rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  box-shadow: var(--shadow-sticker);
+}
+.d { font-size: 26rpx; color: var(--text-deep); font-weight: 600; }
+.marks { display: flex; align-items: center; gap: 4rpx; margin-top: 4rpx; height: 18rpx; }
+.dot { width: 12rpx; height: 12rpx; border-radius: 50%; display: inline-block; }
+.dot.period { background: var(--candy-pink-deep); }
+.ricon { font-size: 14rpx; color: var(--blue-deep); font-weight: 700; }
+.ricon-dot {
+  font-size: 18rpx;
+  width: 28rpx; height: 28rpx;
+  border-radius: 8rpx;
+  background: var(--sticky-blue-bg);
+  color: var(--text-deep);
+  border: 1rpx solid var(--blue-deep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.legend {
+  display: flex; justify-content: space-around; padding: 22rpx;
+  background: var(--sticky-blue-bg);
+  border: 3rpx solid var(--sticky-blue-edge);
+  border-radius: var(--radius-soft);
+  box-shadow: var(--shadow-paper);
+}
+.lg { display: flex; align-items: center; gap: 8rpx; font-size: 24rpx; color: var(--text-soft); }
+
+.tap { cursor: pointer; }
+
+.set-form { display: flex; flex-direction: column; gap: 22rpx; }
+.set-row { font-size: 28rpx; color: var(--text-deep); }
+.set-label { flex: 0 1 auto; margin-right: 16rpx; }
+.picker-val { display: inline-block; min-width: 200rpx; }
+/* 数字输入框：显式给宽/高/padding，并 flex:0 0 auto 防止被左侧文案挤压。
+   旧样式只有 width:180rpx + text-align:right，继承了全局 .soft-input 的
+   22rpx/26rpx 内边距，在 box-sizing:border-box 下正文区只剩约 122rpx，
+   且没有任何 placeholder 兜底 —— 值为空时看起来就是「一个空框」。 */
+.num-input {
+  flex: 0 0 auto;
+  width: 200rpx;
+  min-height: 76rpx;
+  padding: 16rpx 18rpx;
+  box-sizing: border-box;
+  font-size: 30rpx;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-deep);
+}
+.num-input::placeholder { color: var(--text-faint); font-weight: 400; }
+.set-hint { font-size: 22rpx; color: var(--text-soft); padding-left: 2rpx; }
+
+/* M4 预计下次 */
+.next-card {
+  padding: 24rpx 28rpx;
+  background: var(--cream-paper);
+  border-radius: var(--radius-soft);
+  border: 3rpx dashed var(--line-sketch);
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.next-label { font-size: 24rpx; color: var(--text-soft); }
+.next-val { font-size: 40rpx; font-weight: 800; color: var(--candy-pink-deep); }
+.next-hint { font-size: 22rpx; color: var(--text-faint); }
+
+/* ==========================
+   经期提醒（一次性订阅）
+   —— 做成一张安静的便签，不抢日历本身的视觉重心
+   ========================== */
+.remind-card { padding: 24rpx 26rpx; }
+.remind-hint {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.65;
+  color: var(--text-soft);
+}
+.remind-btn { margin-top: 18rpx; font-size: 27rpx; }
+.remind-partner {
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx dashed var(--line-sketch);
+  gap: 16rpx;
+}
+.remind-partner-text { flex: 1 1 auto; display: flex; flex-direction: column; gap: 4rpx; }
+.remind-partner-title { font-size: 26rpx; font-weight: 700; color: var(--text-deep); }
+.remind-partner-sub { font-size: 21rpx; line-height: 1.5; color: var(--text-faint); }
+.remind-switch { flex: 0 0 auto; transform: scale(.86); transform-origin: right center; }
+.remind-foot {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 21rpx;
+  line-height: 1.65;
+  color: var(--text-faint);
+}

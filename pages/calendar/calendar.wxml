@@ -1,0 +1,111 @@
+<view class="page-pad">
+
+  <!-- 温柔日历（顶部便签条） -->
+  <view class="hero fade-in">
+    <view class="cal-title">我们的日历</view>
+    <view class="cal-sub">经期 · 阅读 · 心愿，都在这里</view>
+  </view>
+
+  <view class="month-bar row-between mt-m">
+    <view class="arrow nav-pill" bindtap="prev">‹</view>
+    <text class="month-text">{{year}} 年 {{month}} 月</text>
+    <view class="arrow nav-pill" bindtap="next">›</view>
+  </view>
+
+  <view class="week-row mt-m">
+    <text wx:for="{{weeks}}" wx:key="*this" class="wk">{{item}}</text>
+  </view>
+
+  <view class="grid note-yellow mt-s">
+    <view wx:for="{{cells}}" wx:key="index" class="cell {{item.blank ? 'blank' : ''}} {{item.isToday ? 'today' : ''}}">
+      <text wx:if="{{!item.blank}}" class="d">{{item.day}}</text>
+      <view wx:if="{{item.mark}}" class="marks">
+        <text wx:if="{{item.mark.type === 'period'}}" class="dot period"></text>
+        <text wx:if="{{item.mark.read}}" class="ricon">读</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="note-blue mt-m legend">
+    <view class="lg"><text class="dot period"></text>经期</view>
+    <view class="lg"><text class="ricon-dot">读</text>阅读</view>
+  </view>
+
+  <!-- M4 经期记录（记录方才能写） -->
+  <view wx:if="{{isHer}}" class="block note-pink mt-m fade-in">
+    <view class="row-between tap" bindtap="toggleSetting">
+      <text class="section-title">经期记录</text>
+      <text class="section-sub">{{configured ? '已记录' : '未记录'}} {{open ? '▲' : '▼'}}</text>
+    </view>
+
+    <!-- 预计下次（始终展示） -->
+    <view wx:if="{{nextStart}}" class="next-card mt-m">
+      <text class="next-label">预计下次</text>
+      <text class="next-val">{{nextLabel}}</text>
+    </view>
+
+    <view wx:if="{{open}}" class="set-form mt-m">
+      <view class="set-row row-between">
+        <text class="set-label">最近一次来姨妈</text>
+        <picker mode="date" value="{{lastStart}}" end="{{todayStr}}" bindchange="onLastStart">
+          <view class="picker-val soft-input">{{lastStart || '选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="set-row row-between">
+        <text class="set-label">平时周期（天）</text>
+        <input class="num-input soft-input" type="number" value="{{cycle}}" placeholder="28"
+               maxlength="3" bindinput="onCycle" bindblur="onCycleBlur" />
+      </view>
+      <view class="set-row row-between">
+        <text class="set-label">姨妈持续（天）</text>
+        <input class="num-input soft-input" type="number" value="{{periodLen}}" placeholder="5"
+               maxlength="2" bindinput="onPeriodLen" bindblur="onPeriodLenBlur" />
+      </view>
+      <text class="set-hint">周期可填 15~60 天，持续天数可填 1~10 天</text>
+      <view class="btn-primary {{saving ? 'disabled' : ''}}" bindtap="saveMenstrual">{{saving ? '保存中…' : '保存'}}</view>
+    </view>
+  </view>
+
+  <!-- 陪伴方视角：仅显示预计下次日期 -->
+  <view wx:else class="block note-purple mt-m fade-in">
+    <view wx:if="{{nextStart}}" class="next-card">
+      <text class="next-label">TA 预计下次姨妈</text>
+      <text class="next-val">{{nextLabel}}</text>
+    </view>
+    <view wx:elif="{{shareDenied}}" class="muted" style="padding:20rpx 0;">TA 还没授权你查看经期，可以提醒 TA 在「经期共享」里开启</view>
+    <view wx:else class="muted" style="padding:20rpx 0;">经期还没设置，等 TA 记录后就能看到预计日期</view>
+  </view>
+
+  <!-- 经期提醒（一次性订阅，预计日期前 2 天） -->
+  <view wx:if="{{isHer || nextStart}}" class="block note-blue mt-m remind-card fade-in">
+    <view class="row-between">
+      <text class="section-title">经期提醒</text>
+      <view class="soft-chip {{remindQuota > 0 ? 'green' : 'pink'}}">{{remindQuota > 0 ? '已记录 ' + remindQuota + ' 次' : '未开启'}}</view>
+    </view>
+    <!-- 提示行只在「有必须说的话」时才出现（模板未配置 / 他需要她先打开开关）；
+         她正常状态下状态已由右上角标签表达，这里不再重复一遍。 -->
+    <text wx:if="{{remindHint}}" class="remind-hint">{{remindHint}}</text>
+    <view class="candy-btn remind-btn" bindtap="subscribeRemind">{{remindQuota > 0 ? '再开启几次' : '订阅经期提醒'}}</view>
+    <view wx:if="{{isHer}}" class="remind-partner row-between">
+      <view class="remind-partner-text">
+        <text class="remind-partner-title">也提醒 TA</text>
+        <text class="remind-partner-sub">TA 要用自己的微信订阅一次；关掉不影响你的提醒</text>
+      </view>
+      <switch class="remind-switch" checked="{{partnerRemind}}" bindchange="onPartnerRemind" color="#f2a7bb" />
+    </view>
+    <!-- 一次性订阅只在这里说一次 -->
+    <text class="remind-foot">开启后，预计经期前 2 天提醒一次。</text>
+  </view>
+
+  <!-- 经期共享（记录方授权 TA 查看经期数据；默认关） -->
+  <view wx:if="{{isHer && configured}}" class="block note-green mt-m share-card fade-in">
+    <view class="row-between">
+      <view class="remind-partner-text">
+        <text class="section-title">经期共享</text>
+        <text class="muted small">开启后，TA 才能看到你的预计经期日期。经期是敏感信息，默认不共享，你随时可以关掉。</text>
+      </view>
+      <switch checked="{{sharePeriod}}" bindchange="onSharePeriod" color="#f2a7bb" />
+    </view>
+  </view>
+
+</view>

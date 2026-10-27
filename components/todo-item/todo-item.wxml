@@ -1,0 +1,7 @@
+<view class="todo-item {{item.done ? 'done' : ''}}" bindtap="onToggle">
+  <view class="check {{item.done ? 'checked' : ''}}">
+    <text wx:if="{{item.done}}" class="tick">✓</text>
+  </view>
+  <text class="txt ellipsis">{{item.text}}</text>
+  <view class="del" catchtap="onDelete">×</view>
+</view>

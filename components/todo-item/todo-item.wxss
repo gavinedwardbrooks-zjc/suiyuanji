@@ -1,0 +1,58 @@
+/* todo-item 组件 · 便签式待办行（2026-08-28 重构）
+   [checkbox 40rpx] [文本 flex:1] [× 删除] 三列浅卡片 */
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 18rpx 22rpx;
+  background: var(--card);
+  border: 2rpx solid var(--line);
+  border-radius: 22rpx;
+  box-shadow: var(--shadow-soft-ink);
+  transition: all .25s var(--ease);
+}
+.todo-item.done { opacity: .6; }
+
+/* checkbox：圆角小方块，完成态绿色勾 */
+.check {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 12rpx;
+  border: 3rpx solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .25s var(--ease);
+  background: var(--cream-soft);
+}
+.check.checked {
+  background: var(--green-deep);
+  border-color: var(--green-deep);
+}
+.tick { color: #FFFDF9; font-size: 26rpx; font-weight: 700; line-height: 1; }
+
+/* 文本：flex:1，完成态划线弱化 */
+.txt {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  color: var(--text-deep);
+  transition: all .3s var(--ease);
+}
+.todo-item.done .txt {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-faint);
+  color: var(--text-faint);
+}
+
+/* 删除 ×：右侧，轻弱色 */
+.del {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+  font-size: 40rpx;
+  line-height: 1;
+  padding: 0 6rpx;
+  transition: color .2s var(--ease);
+}
+.del:active { color: var(--pink-deep); }

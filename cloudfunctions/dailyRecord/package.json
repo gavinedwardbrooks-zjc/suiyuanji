@@ -1,0 +1,7 @@
+{
+  "name": "dailyRecord",
+  "version": "1.0.0",
+  "description": "当日记录的读写与心愿同步",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

@@ -1,0 +1,50 @@
+<view class="page-pad">
+
+  <view class="hero fade-in">
+    <view class="ht">今天去哪里</view>
+    <view class="hs">{{tab === 'beijing' ? '北京周边 / 北京一天' : '城市漫游 / 3 天 2 夜'}}</view>
+  </view>
+
+  <!-- 双 Tab（糖感便签） -->
+  <view class="tabs row mt-m">
+    <view class="tab note-yellow {{tab === 'beijing' ? 'active' : ''}}" data-tab="beijing" bindtap="switchTab">北京</view>
+    <view class="tab note-blue {{tab === 'outside' ? 'active' : ''}}" data-tab="outside" bindtap="switchTab">外地</view>
+  </view>
+
+  <!-- 未就绪 -->
+  <view wx:if="{{!ready && !loading}}" class="note-stripe note-blue mt-m empty-state">
+    <text class="empty-title">旅行地点库还没准备好</text>
+    <text class="empty-sub">开发模式请在云函数测试页调用 seedTravelPlaces</text>
+  </view>
+
+  <block wx:else>
+    <view class="mt-m center-col" style="padding:32rpx 24rpx;background: var(--cream-paper); border-radius: var(--radius-soft); border: 3rpx solid var(--line-sketch);">
+      <view class="candy-btn random-btn {{loading ? 'disabled' : ''}}" bindtap="randomPlace">{{loading ? '随机中…' : '随机一个'}}</view>
+      <text wx:if="{{error}}" class="err-txt">{{error}}</text>
+    </view>
+
+    <!-- 随机结果卡 -->
+    <view wx:if="{{place}}" class="note-{{tab === 'beijing' ? 'yellow' : 'blue'}} mt-m place-card">
+      <view class="place-art">
+        <image src="{{tab === 'beijing' ? decoCatSrc : decoPlantSrc}}" mode="aspectFit" class="place-illust" />
+      </view>
+      <text class="pc-name">{{place.name}}</text>
+      <text class="pc-intro">{{place.shortIntro}}</text>
+      <view class="pc-tags">
+        <text wx:for="{{place.tags}}" wx:key="index" class="soft-chip pink">{{item}}</text>
+      </view>
+      <text class="pc-days">{{tab === 'beijing' ? '默认 1 天' : '3 天 2 夜'}}</text>
+      <view class="candy-btn mint detail-btn mt-m" data-id="{{place._id}}" bindtap="goDetail">查看计划</view>
+
+      <!-- 就去这里：确定的是「今天去这个地点」，与上面的多日计划编辑无关。
+           只有记录方（her）能确认；him 只推荐不确认，服务端还会再拒一次。 -->
+      <view wx:if="{{isHer}}" class="center-col confirm-box">
+        <view wx:if="{{isConfirmedCurrent}}" class="candy-btn confirm-btn confirmed">今天已确定</view>
+        <view wx:else class="candy-btn confirm-btn {{confirming ? 'disabled' : ''}}" bindtap="confirmPlace">{{confirming ? '确定中…' : '就去这里'}}</view>
+        <text wx:if="{{confirmedName && !isConfirmedCurrent}}" class="confirm-tip">今天已确定：{{confirmedName}}</text>
+        <text wx:if="{{confirmError}}" class="err-txt">{{confirmError}}</text>
+      </view>
+    </view>
+  </block>
+
+</view>

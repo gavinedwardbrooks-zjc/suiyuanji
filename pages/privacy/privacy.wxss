@@ -1,0 +1,13 @@
+.hero { display: flex; flex-direction: column; align-items: center; padding: 20rpx 0; }
+.ht { font-size: 38rpx; font-weight: 700; color: var(--ink); }
+
+.block { margin-top: 26rpx; }
+.block.card {
+  background: var(--cream-soft);
+  border: 2rpx solid var(--line);
+  box-shadow: var(--shadow-paper);
+  padding: 26rpx 28rpx;
+}
+.small { font-size: 24rpx; }
+.section-title { color: var(--text-deep); letter-spacing: 1rpx; display: block; font-weight: 600; }
+.p-line { display: block; margin-top: 10rpx; line-height: 1.7; }

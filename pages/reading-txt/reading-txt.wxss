@@ -1,0 +1,136 @@
+/* pages/reading-txt/reading-txt.wxss · 本机 TXT 阅读页（S5）
+   沿用全站主题变量，不引入硬编码色值。 */
+
+.txt-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---------- 状态块（加载 / 错误） ---------- */
+.state-box {
+  margin-top: 120rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 44rpx 32rpx;
+  background: var(--card);
+  border: 2rpx dashed var(--notebook-line);
+  border-radius: var(--radius-soft);
+  box-shadow: var(--shadow-paper);
+}
+.st-icon { font-size: 64rpx; }
+.st-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-deep);
+  text-align: center;
+}
+.st-sub {
+  font-size: 24rpx;
+  color: var(--text-soft);
+  text-align: center;
+  line-height: 1.7;
+}
+.st-actions {
+  margin-top: 10rpx;
+  display: flex;
+  gap: 16rpx;
+}
+.st-actions .candy-btn { min-width: 180rpx; }
+.candy-btn.ghost {
+  color: var(--text-soft);
+  background: var(--cream-soft);
+  box-shadow: none;
+}
+
+/* ---------- 抬头 ---------- */
+.txt-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  padding: 0 8rpx 14rpx;
+}
+.tb-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-deep);
+}
+.tb-sub {
+  font-size: 22rpx;
+  color: var(--text-soft);
+}
+.tb-resumed {
+  font-size: 22rpx;
+  color: var(--pink-deep);
+}
+
+/* ---------- 编码异常提示（只提示，绝不改文件） ---------- */
+.warn-bar {
+  margin-bottom: 12rpx;
+  padding: 14rpx 20rpx;
+  font-size: 24rpx;
+  color: var(--text-deep);
+  background: var(--candy-pink);
+  border-radius: var(--radius);
+  line-height: 1.6;
+}
+
+/* ---------- 正文：只渲染当前页 ---------- */
+.txt-scroll {
+  flex: 1;
+  height: 62vh;
+  padding: 26rpx 24rpx;
+  background: var(--card);
+  border: 2rpx solid var(--notebook-line);
+  border-radius: var(--radius-soft);
+  box-shadow: var(--shadow-paper);
+}
+.txt-body {
+  display: block;
+  font-size: 30rpx;
+  line-height: 1.85;
+  color: var(--text-deep);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- 底栏翻页 ---------- */
+.txt-bar {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 16rpx;
+  background: var(--cream-soft);
+  border: 2rpx solid var(--line);
+  border-radius: var(--radius);
+}
+.bar-btn {
+  flex-shrink: 0;
+  padding: 12rpx 22rpx;
+  font-size: 26rpx;
+  color: var(--text-deep);
+  background: var(--card);
+  border: 2rpx solid var(--notebook-line);
+  border-radius: var(--radius);
+}
+.bar-btn.off { opacity: .4; }
+.bar-btn:active { opacity: .6; }
+.bar-idx {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-soft);
+}
+.bar-jump {
+  width: 120rpx;
+  padding: 10rpx 14rpx;
+  font-size: 26rpx;
+  text-align: center;
+  background: var(--card);
+  border: 2rpx solid var(--notebook-line);
+  border-radius: var(--radius);
+  color: var(--text-deep);
+}

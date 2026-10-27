@@ -1,0 +1,289 @@
+<view class="page-pad">
+
+  <!-- V1.1 · P1/P2/P2.1：视图模式分支。
+       pending = 身份/角色未确认（中性等待，不渲染任何一方页面）；
+       owner = 记录方；companion = 陪伴方；companion-blocked = 陪伴方但绑定不可用。 -->
+  <block wx:if="{{viewMode === 'pending'}}">
+    <view class="block note-purple fade-in">
+      <!-- P3.0：登录失败/超时 → 明确说明 + 重试；不伪造身份（不使用定时器伪装成功） -->
+      <text wx:if="{{loginState === 'failed' || loginState === 'timeout'}}" class="muted small">连接没有完成，可能是网络不太稳定。</text>
+      <text wx:elif="{{viewerState === 'role_unknown'}}" class="muted small">身份信息不完整，请退出小程序后重新进入。</text>
+      <text wx:else class="muted small">正在确认身份…</text>
+      <view wx:if="{{loginState === 'failed' || loginState === 'timeout'}}" class="candy-btn mt-m" bindtap="onLoginRetry">重新连接</view>
+    </view>
+  </block>
+
+  <block wx:elif="{{viewMode === 'owner'}}">
+
+  <!-- H1-1 Hero 大插画区（参考图顶部奶油区 + 三色便签笔触 + Hero 插画） -->
+  <view class="hero-big fade-in">
+    <image class="deco deco tl" src="{{decoTapeSrc}}" mode="aspectFit" />
+    <image class="deco deco tr" src="{{decoCloudSrc}}" mode="aspectFit" />
+    <view class="ht greeting-h">{{greeting}}</view>
+    <view class="hero-date">{{date}}</view>
+    <view class="hero-art">
+      <view class="journal-sticker" aria-label="手账贴纸">
+        <view class="sticker-ring"></view>
+        <text class="sticker-mark">♡</text>
+        <text class="sticker-label">今日手账</text>
+      </view>
+    </view>
+    <view class="hero-deco-row">
+      <image class="mini-flower" src="{{decoFlowerSrc}}" mode="aspectFit" />
+      <image class="mini-heart" src="{{decoHeartSrc}}" mode="aspectFit" />
+      <image class="mini-sprout" src="{{decoSproutSrc}}" mode="aspectFit" />
+    </view>
+  </view>
+
+  <!-- 纪念日主视觉（记录方）：与陪伴端同一套样式、同一份服务端数据 —— 双方看到的天数完全一致。
+       ownAnniState 未到 ready 时不渲染：既不显示 0 天，也不显示「还没设置」的假空态。 -->
+  <view wx:if="{{ownAnniState === 'ready'}}" class="block note-pink anni-hero fade-in">
+    <view class="anni-hero-top">
+      <text class="anni-hero-greet">我们的纪念日</text>
+      <text wx:if="{{ownAnniText}}" class="anni-hero-date">{{ownAnniText}}</text>
+    </view>
+    <view wx:if="{{ownDays}}" class="anni-hero-days">
+      <text class="anni-hero-num">{{ownDays}}</text>
+      <text class="anni-hero-unit">天</text>
+    </view>
+    <view wx:if="{{ownDays}}" class="anni-hero-cap">在一起的日子，每一天都算数</view>
+    <view wx:else class="anni-hero-cap tap" bindtap="goOurs">还没有设置纪念日，去「我们」页设置 ›</view>
+  </view>
+
+  <!-- 今日决定（记录方视角）：与陪伴端读同一份服务端结果。
+       有结果 → 显示具体菜名 / 地点；没有 → 「今天还没决定」；读不到 → 「暂时读不到」。
+       网络失败绝不渲染成「今天还没决定」（那是服务异常，不是她的决定）。 -->
+  <block wx:if="{{dayChoiceState === 'ready' || dayChoiceState === 'loading'}}">
+    <view class="block note-yellow fade-in day-choice tap" bindtap="goFood">
+      <view class="row-between">
+        <text class="section-title">今天吃什么</text>
+        <text class="section-sub">{{mealDecided ? mealName : (dayChoiceState === 'loading' ? '读取中…' : '今天还没决定')}} ›</text>
+      </view>
+    </view>
+    <view class="block note-blue fade-in day-choice tap" bindtap="goTravel">
+      <view class="row-between">
+        <text class="section-title">今天去哪里</text>
+        <text class="section-sub">{{travelDecided ? travelName : (dayChoiceState === 'loading' ? '读取中…' : '今天还没决定')}} ›</text>
+      </view>
+    </view>
+  </block>
+  <view wx:elif="{{dayChoiceState === 'error'}}" class="block note-stripe note-yellow fade-in">
+    <view class="row-between">
+      <text class="section-title">今天的决定</text>
+      <text class="section-sub">暂时读不到</text>
+    </view>
+  </view>
+
+  <!-- H2 空状态：轻量便签提示（无装饰干扰，fail-closed，无假数据） -->
+  <view wx:if="{{!hasRecord && !loading}}" class="empty-state fade-in" bindtap="goRecord">
+    <text class="empty-title">今天还没记录</text>
+    <text class="empty-sub">点这里写下第一件事</text>
+    <view class="candy-btn empty-cta">去记录 ›</view>
+  </view>
+
+  <block wx:else>
+    <!-- H1-2 今日状态：note-pink 软卡（左侧今日得分 + 右侧心情） -->
+    <view class="block note-pink status-card fade-in">
+      <view class="status-row">
+        <view class="stat">
+          <text class="stat-label">{{partnerName}}的得分</text>
+          <text class="hand-num pink">{{score ? score : '?'}}<text class="hand-unit">/5</text></text>
+          <text class="stat-word">{{scoreWord}}</text>
+        </view>
+        <view class="stat mood-stat">
+          <text class="stat-label">今天心情</text>
+          <view class="mood-row">
+            <image wx:if="{{moodSrc}}" class="mood-ico" src="{{moodSrc}}" mode="aspectFit" />
+            <image wx:if="{{weatherSrc}}" class="mood-ico sm" src="{{weatherSrc}}" mode="aspectFit" />
+          </view>
+        </view>
+      </view>
+      <image wx:if="{{moodSrc}}" class="deco deco br" src="{{decoStarSrc}}" mode="aspectFit" />
+    </view>
+
+    <!-- H1-3 今日 3 件大事（note-pink/note-yellow/note-blue 三色便签条带） -->
+    <view class="block">
+      <view class="row-between section-row">
+        <text class="section-title">今日目标</text>
+        <text class="section-sub tap" bindtap="goRecord">全部 ›</text>
+      </view>
+      <view wx:if="{{goals.length === 0}}" class="note-stripe note-yellow muted tap" bindtap="goRecord">
+        还没有目标，去写三件大事 ›
+      </view>
+      <view wx:else class="goals-stack">
+        <view wx:for="{{goals}}" wx:key="index" class="goal-card note-{{goalColorForIndex(index)}} {{item.done ? 'goal-done' : ''}}">
+          <view class="note-num goal-num">{{item.done ? '✓' : index + 1}}</view>
+          <view class="goal-text ellipsis">{{item.text || '—'}}</view>
+          <image wx:if="{{index === 0}}" class="deco-cute" src="{{decoFlowerSrc}}" mode="aspectFit" />
+        </view>
+        <view wx:if="{{goals.length < 3}}" class="goal-card note-purple goal-empty" bindtap="goRecord">
+          <view class="note-num goal-num">+</view>
+          <view class="goal-text">再加一件</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- H1-4 今日小事进度（note-purple 软卡 + 软糖状进度条） -->
+    <view class="block note-purple fade-in">
+      <view class="row-between">
+        <text class="section-title">今日小事</text>
+        <soft-chip class="soft-chip mint">{{todoDone}}/{{todoCount}}</soft-chip>
+      </view>
+      <view class="progress-row mt-m">
+        <view class="bar"><view class="bar-fill" style="width:{{ todoCount ? todoDone / todoCount * 100 : 0 }}%"></view></view>
+      </view>
+    </view>
+
+    <!-- 预计经期（原「我们」页卡片移至首页；服务端已按 sharePeriod 判定可见性） -->
+    <view wx:if="{{homeNextLabel}}" class="block note-stripe note-purple fade-in tap" bindtap="goCalendar">
+      <view class="row-between">
+        <text class="section-title">预计下次姨妈</text>
+        <text class="section-sub">{{homeNextLabel}} ›</text>
+      </view>
+    </view>
+
+    <!-- H1-5 AI 小结（H3：summary=null → card-skeleton 手绘线稿骨架） -->
+    <card-skeleton wx:if="{{summarySkeleton}}" title="今日 AI 小结" sub="每晚生成" class="block">
+      <view class="sk-line w-100"></view>
+      <view class="sk-line w-80"></view>
+      <view class="sk-line w-60"></view>
+    </card-skeleton>
+    <view wx:elif="{{hasSummary}}" class="block note-green fade-in">
+      <view class="row-between">
+        <text class="section-title">今日 AI 小结</text>
+        <text class="section-sub">{{summaryAt}}</text>
+      </view>
+      <text class="summary-text">{{summary}}</text>
+      <image class="deco deco br" src="{{decoHeartSrc}}" mode="aspectFit" />
+    </view>
+  </block>
+
+  <!-- H4 最近 7 天（治愈系小贴纸散点） -->
+  <view class="block note-yellow fade-in">
+    <view class="row-between">
+      <text class="section-title">最近 7 天</text>
+      <text class="section-sub tap" bindtap="goCalendar">查看日历 ›</text>
+    </view>
+    <view class="week-row mt-m">
+      <view wx:for="{{weekDays}}" wx:key="date" class="week-col {{item.date === todayStr ? 'today' : ''}}">
+        <view class="week-dot {{item.hasRecord ? 'on' : ''}}"></view>
+        <text class="week-date">{{fmtShort(item.date)}}</text>
+      </view>
+    </view>
+    <view class="muted small mt-s" style="text-align:center;">有记录的日子会亮起小圆点</view>
+  </view>
+
+  </block>
+
+  <block wx:elif="{{viewMode === 'companion'}}">
+    <!-- 陪伴方首页：只展示 getPartnerView 白名单内的共享内容，不出现任何个人记录字段 -->
+
+    <view wx:if="{{pvState === 'loading'}}" class="block note-purple fade-in">
+      <text class="muted small">正在读取今天的内容…</text>
+    </view>
+
+    <view wx:elif="{{pvState === 'error'}}" class="block note-yellow fade-in">
+      <text class="section-title">暂时读不到内容</text>
+      <view class="muted small mt-s">网络或服务好像不太稳定，稍后再试。</view>
+      <view class="candy-btn mt-m" bindtap="reloadCompanion">重试</view>
+    </view>
+
+    <view wx:elif="{{pvState === 'blocked'}}" class="block note-yellow fade-in">
+      <text class="section-title">绑定未生效</text>
+      <view class="muted small mt-s">当前的绑定关系不可用，暂时看不到共享内容。</view>
+      <view class="candy-btn mt-m" bindtap="goOurs">去「我们」页</view>
+    </view>
+
+    <block wx:else>
+      <!-- 纪念日（首页主视觉：天数放大，其余信息降级为辅助行） -->
+      <view class="block note-pink anni-hero fade-in">
+        <view class="anni-hero-top">
+          <text class="anni-hero-greet">{{greeting}}{{pvName || 'TA'}}</text>
+          <text wx:if="{{pvAnniText}}" class="anni-hero-date">{{pvAnniText}}</text>
+        </view>
+        <view wx:if="{{pvDays}}" class="anni-hero-days">
+          <text class="anni-hero-num">{{pvDays}}</text>
+          <text class="anni-hero-unit">天</text>
+        </view>
+        <view wx:if="{{pvDays}}" class="anni-hero-cap">在一起的日子，每一天都算数</view>
+        <view wx:else class="anni-hero-cap tap" bindtap="goOurs">还没有设置纪念日，去「我们」页设置 ›</view>
+      </view>
+
+      <!-- 今日决定（陪伴方视角）：只读，同一份服务端结果。
+           点卡片可进推荐页看推荐，但那里不提供确认操作（服务端也会拒 his 的确认）。 -->
+      <block wx:if="{{dayChoiceState === 'ready' || dayChoiceState === 'loading'}}">
+        <view class="block note-yellow fade-in day-choice tap" bindtap="goFood">
+          <view class="row-between">
+            <text class="section-title">今天吃什么</text>
+            <text class="section-sub">{{mealDecided ? mealName : (dayChoiceState === 'loading' ? '读取中…' : '今天还没决定')}} ›</text>
+          </view>
+        </view>
+        <view class="block note-blue fade-in day-choice tap" bindtap="goTravel">
+          <view class="row-between">
+            <text class="section-title">今天去哪里</text>
+            <text class="section-sub">{{travelDecided ? travelName : (dayChoiceState === 'loading' ? '读取中…' : '今天还没决定')}} ›</text>
+          </view>
+        </view>
+      </block>
+      <view wx:elif="{{dayChoiceState === 'error'}}" class="block note-stripe note-yellow fade-in">
+        <view class="row-between">
+          <text class="section-title">今天的决定</text>
+          <text class="section-sub">暂时读不到</text>
+        </view>
+      </view>
+
+      <!-- 空态：只说清楚「没有可查看的共享内容」。
+           原来这里还挂了一个跳「我们」页的按钮，已随首页入口一并移除；
+           「我们」页本身仍在底部 TabBar，功能不受影响。 -->
+      <view wx:if="{{pvState === 'empty'}}" class="block note-purple fade-in">
+        <text class="muted small">今天还没有可查看的共享内容。</text>
+      </view>
+
+      <block wx:else>
+        <!-- 今日评分（对方给的评分；没有就不编） -->
+        <view class="block note-blue fade-in">
+          <text class="section-title">今天的评分</text>
+          <view wx:if="{{pvScore}}" class="status-row">
+            <view class="stat">
+              <text class="hand-num pink">{{pvScore}}<text class="hand-unit">/5</text></text>
+              <text class="stat-word">TA 今天给你的评分</text>
+            </view>
+          </view>
+          <view wx:else class="muted small mt-s">今天还没有评分。</view>
+        </view>
+
+        <!-- 伙伴版小结（白名单字段，服务端不返回就不显示） -->
+        <view wx:if="{{pvSummary}}" class="block note-green fade-in">
+          <text class="section-title">今日小结</text>
+          <text class="summary-text mt-s">{{pvSummary}}</text>
+        </view>
+
+        <!-- 心愿摘要（详情与管理统一在「我们」页，首页不重复长列表） -->
+        <view class="block note-yellow fade-in tap" bindtap="openWishes">
+          <view class="row-between">
+            <text class="section-title">TA 的心愿</text>
+            <text class="section-sub">{{pvWishSummary}} ›</text>
+          </view>
+        </view>
+
+        <!-- 预计经期：服务端 menstrual get 已按 sharePeriod 授权判定，未授权不返回 -->
+        <view wx:if="{{homeNextLabel}}" class="block note-stripe note-purple fade-in">
+          <view class="row-between">
+            <text class="section-title">TA 预计下次姨妈</text>
+            <text class="section-sub">{{homeNextLabel}}</text>
+          </view>
+        </view>
+
+      </block>
+    </block>
+  </block>
+
+  <block wx:elif="{{viewMode === 'companion-blocked'}}">
+    <view class="block note-yellow fade-in">
+      <text class="section-title">绑定未生效</text>
+      <view class="muted small mt-s">当前没有可用的绑定关系，看不到共享内容。</view>
+      <view class="candy-btn mt-m" bindtap="goOurs">去「我们」页</view>
+    </view>
+  </block>
+
+</view>

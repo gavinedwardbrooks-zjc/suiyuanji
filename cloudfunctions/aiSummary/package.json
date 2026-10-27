@@ -1,0 +1,7 @@
+{
+  "name": "aiSummary",
+  "version": "1.0.0",
+  "description": "每晚生成暖心总结 + 更新持续画像 + 推送",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

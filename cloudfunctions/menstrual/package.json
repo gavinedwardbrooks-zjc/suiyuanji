@@ -1,0 +1,7 @@
+{
+  "name": "menstrual",
+  "version": "1.0.0",
+  "description": "经期推算 + 当月标记（经期/排卵期/阅读/心愿）",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

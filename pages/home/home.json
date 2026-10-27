@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "card-skeleton": "/components/card-skeleton/card-skeleton"
+  },
+  "navigationBarTitleText": "碎愿集"
+}

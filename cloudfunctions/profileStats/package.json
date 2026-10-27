@@ -1,0 +1,7 @@
+{
+  "name": "profileStats",
+  "version": "1.0.0",
+  "description": "首页最近 7 天回顾 + 周报读取（M3）",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

@@ -1,0 +1,51 @@
+page { background: var(--notebook-bg); }
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 28rpx 22rpx 18rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero .ht { color: var(--notebook-brown); letter-spacing: 2rpx; }
+.ht { font-size: 40rpx; font-weight: 700; color: var(--text-deep); }
+.hs { font-size: 24rpx; color: var(--text-soft); }
+
+.tabs { gap: 18rpx; }
+.tab {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 20rpx 0;
+  border-radius: var(--radius-pill);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all .2s var(--ease);
+}
+.tab.active {
+  color: var(--text-deep);
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+  transform: scale(1.03);
+}
+
+.center-col { display: flex; flex-direction: column; align-items: center; gap: 14rpx; }
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+  padding: 60rpx 24rpx;
+}
+.empty-title { font-size: 30rpx; color: var(--text-deep); font-weight: 700; }
+.empty-sub { font-size: 24rpx; color: var(--text-soft); text-align: center; }
+
+.place-card { padding: 28rpx 24rpx; }
+.place-art { display: flex; justify-content: center; margin-bottom: 10rpx; }
+.place-illust { width: 200rpx; height: 140rpx; }
+.pc-name { font-size: 36rpx; font-weight: 800; color: var(--text-deep); display: block; text-align: center; }
+.pc-intro { margin-top: 8rpx; display: block; font-size: 26rpx; color: var(--text-soft); text-align: center; line-height: 1.6; }
+.pc-tags { margin-top: 16rpx; display: flex; flex-wrap: wrap; justify-content: center; gap: 10rpx; }
+.pc-days { margin-top: 14rpx; display: block; text-align: center; font-size: 24rpx; color: var(--text-deep); font-weight: 600; }
+.detail-btn { display: block; text-align: center; }
+
+.err-txt { margin-top: 12rpx; color: var(--green-deep); font-size: 26rpx; }
+.candy-btn { display: block; text-align: center; }
+.candy-btn.mint { display: block; text-align: center; }
+
+/* V1.1 今日决定：确认按钮与已确认提示 */
+.confirm-box { padding-top: 22rpx; }
+.confirm-btn { min-width: 320rpx; }
+.confirm-btn.confirmed { background: var(--candy-mint, #CDEBD8); color: var(--text-deep); }
+.confirm-tip { font-size: 24rpx; color: var(--text-soft); text-align: center; }

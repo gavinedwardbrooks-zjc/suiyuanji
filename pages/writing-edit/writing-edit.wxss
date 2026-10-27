@@ -1,0 +1,14 @@
+.writing-page { padding: 28rpx 28rpx calc(48rpx + env(safe-area-inset-bottom)); min-height: 100vh; background: var(--notebook-bg); box-sizing: border-box; }
+.writing-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24rpx; }
+.back { font-size: 56rpx; color: var(--notebook-brown); line-height: 1; }
+.head-status, .privacy { color: var(--text-soft); font-size: 24rpx; }
+.paper-card { background: var(--notebook-card); border: 2rpx solid var(--notebook-line); border-radius: 30rpx; box-shadow: var(--shadow-paper); }
+.letter-paper { padding: 30rpx 26rpx 24rpx; background-image: repeating-linear-gradient(0deg, transparent 0 58rpx, rgba(231,215,199,.42) 59rpx 60rpx); }
+.title-input { min-height: 72rpx; padding: 14rpx 0; box-sizing: border-box; line-height: 44rpx; font-size: 34rpx; font-weight: 700; color: var(--text-deep); border-bottom: 2rpx dashed var(--notebook-line); }
+.content-input { width: 100%; min-height: 520rpx; padding: 28rpx 0; box-sizing: border-box; color: var(--ink); font-size: 30rpx; line-height: 1.9; }
+.word-count { text-align: right; color: var(--text-faint); font-size: 22rpx; }
+.type-section { margin-top: 30rpx; }.section-title { color: var(--text-deep); font-weight: 700; }.type-list { display: flex; flex-wrap: wrap; gap: 14rpx; margin-top: 16rpx; }
+.sticker-tag { padding: 10rpx 18rpx; border-radius: 18rpx; background: var(--cream-soft); color: var(--text-soft); font-size: 24rpx; border: 2rpx solid transparent; }.sticker-tag.active { background: var(--sticky-pink-bg); color: var(--pink-deep); border-color: var(--sticky-pink-edge); }
+.writing-actions { display: flex; gap: 18rpx; margin-top: 42rpx; }.soft-button { flex: 1; min-width: 0; border-radius: 999rpx; font-size: 28rpx; }.soft-button::after { border: 0; }.soft-button.primary { background: var(--candy-pink); color: #fff; }.soft-button.secondary { background: var(--cream-soft); color: var(--notebook-brown); border: 2rpx solid var(--notebook-line); }
+@media (max-width: 360px) { .writing-actions { flex-direction: column; } .soft-button { width: 100%; min-height: 88rpx; } }
+.delete-link { margin-top: 24rpx; background: transparent; color: var(--text-soft); font-size: 24rpx; }.delete-link::after { border: 0; }

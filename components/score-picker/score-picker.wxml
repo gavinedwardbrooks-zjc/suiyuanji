@@ -1,0 +1,19 @@
+<view class="sp">
+  <view class="display {{readonly ? '' : 'tappable'}}" bindtap="toggleOpen">
+    <image class="big {{animClass}}" src="{{faceSrc}}" mode="aspectFit" />
+    <view class="meta">
+      <text class="label">{{readonly ? name + '给你打的分' : name + '的得分'}}</text>
+      <text class="score">{{value ? value + ' / 5' : '未打分'}}</text>
+      <text wx:if="{{word}}" class="word">{{word}}</text>
+    </view>
+    <text wx:if="{{!readonly}}" class="arrow">{{open ? '▲' : '▼'}}</text>
+  </view>
+
+  <view wx:if="{{open && !readonly}}" class="picker pop-in">
+    <view wx:for="{{hearts}}" wx:key="*this"
+          class="heart {{value >= item ? 'on' : ''}}"
+          data-v="{{item}}" bindtap="pick">
+      <image class="heart-ico" src="{{heartSrc}}" mode="aspectFit" />
+    </view>
+  </view>
+</view>

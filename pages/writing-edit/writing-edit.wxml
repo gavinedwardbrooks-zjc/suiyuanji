@@ -1,0 +1,12 @@
+<view class="writing-page">
+  <view class="writing-head"><text class="back" bindtap="goBack">‹</text><text class="head-status">{{status === 'finished' ? '已完成' : '草稿'}}</text></view>
+  <view class="paper-card letter-paper">
+    <view class="privacy">只属于你的文字</view>
+    <input class="title-input" placeholder="给这段文字起个名字，也可以不写" value="{{title}}" bindinput="onTitle" maxlength="100" adjust-position="true" cursor-spacing="24" />
+    <textarea class="content-input" placeholder="想到什么，就写点什么……" value="{{content}}" bindinput="onContent" maxlength="50000" auto-height adjust-position="true" cursor-spacing="24" />
+    <view class="word-count">{{wordCount}} 字</view>
+  </view>
+  <view class="type-section"><text class="section-title">这段文字是</text><view class="type-list"><text wx:for="{{types}}" wx:key="value" class="sticker-tag {{type === item.value ? 'active' : ''}}" data-value="{{item.value}}" bindtap="selectType">{{item.label}}</text></view></view>
+  <view class="writing-actions"><button class="soft-button secondary" loading="{{saving}}" disabled="{{saving}}" bindtap="saveDraft">保存草稿</button><button class="soft-button primary" loading="{{saving}}" disabled="{{saving}}" bindtap="finish">写完啦</button></view>
+  <button wx:if="{{isEdit}}" class="delete-link" loading="{{deleting}}" disabled="{{deleting}}" bindtap="remove">删除这篇文字</button>
+</view>

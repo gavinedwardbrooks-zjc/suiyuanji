@@ -1,0 +1,261 @@
+page { background: var(--notebook-bg); }
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 28rpx 22rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero .ht { letter-spacing: 2rpx; color: var(--notebook-brown); }
+.ht { font-size: 38rpx; font-weight: 700; color: var(--text-deep); }
+
+.block { margin-top: 22rpx; }
+
+/* ==========================
+   章节标题在便签背景上的柔和感
+   ========================== */
+.note-pink .section-title,
+.note-blue .section-title,
+.note-yellow .section-title,
+.note-green .section-title,
+.note-purple .section-title { color: var(--text-deep); }
+.section-sub { color: var(--text-soft); }
+
+/* ==========================
+   P1 心愿（贴纸风）
+   ========================== */
+.wish { padding: 18rpx 0; gap: 14rpx; }
+.wish-left { display: flex; flex-direction: row; align-items: center; gap: 14rpx; flex: 1; }
+.wish-txt { font-size: 28rpx; color: var(--text-deep); }
+.wish-right { display: flex; flex-direction: row; align-items: center; gap: 12rpx; flex-shrink: 0; }
+.arranged-tag {
+  font-size: 22rpx;
+  color: var(--green-deep);
+  background: var(--sticky-green-bg);
+  border-radius: var(--radius-pill);
+  padding: 6rpx 16rpx;
+  font-weight: 600;
+}
+.mark-btn { font-size: 24rpx; padding: 12rpx 26rpx; min-width: 120rpx; }
+
+.wish-empty {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  text-decoration: underline dashed;
+  text-decoration-color: var(--text-faint);
+  color: var(--text-soft);
+}
+
+/* ==========================
+   纪念日（本页只保留紧凑设置入口，天数主视觉在首页）
+   ========================== */
+.anni-set { margin-top: 16rpx; }
+.picker-val { display: inline-block; }
+.pending-card { margin-top: 20rpx; padding: 20rpx 24rpx; border-radius: var(--radius-soft); border: 3rpx dashed var(--line-sketch); }
+
+/* ==========================
+   P2 留言（chat 气泡）
+   —— 高度上限 + 内部滚动：消息再多也不把页面越撑越长；
+      消息少时按内容收缩（max-height 而非固定 height），不留大面积空白
+   ========================== */
+.msg-scroll { max-height: 620rpx; }
+.msg { max-width: 82%; margin-bottom: 14rpx; }
+.msg.mine { margin-left: auto; }
+.msg-bubble {
+  background: #FFFDF9;
+  border-radius: 22rpx 22rpx 22rpx 6rpx;
+  padding: 16rpx 22rpx;
+  font-size: 28rpx;
+  color: var(--text-deep);
+  border: 2rpx solid var(--line);
+}
+.msg.mine .msg-bubble {
+  background: var(--candy-pink);
+  color: #FFFDF9;
+  border-radius: 22rpx 22rpx 6rpx 22rpx;
+  border-color: var(--candy-pink);
+}
+.msg-meta { display: flex; gap: 12rpx; font-size: 20rpx; color: var(--text-faint); margin-top: 6rpx; padding: 0 8rpx; }
+.msg.mine .msg-meta { justify-content: flex-end; }
+.read-tag { color: var(--green-deep); font-weight: 600; }
+.msg-input {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+.msg-input-field {
+  flex: 1;
+  min-width: 0;
+  min-height: 88rpx;
+  font-size: 30rpx;
+  padding: 20rpx 28rpx;
+  box-sizing: border-box;
+  color: var(--text-deep);
+}
+.send-btn {
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 32rpx;
+  font-size: 28rpx;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+.empty-hint { margin-top: 12rpx; text-align: center; padding: 30rpx 0; color: var(--text-faint); }
+
+/* ==========================
+   M1 Binding UI
+   ========================== */
+.bind-code-box {
+  margin-top: 12rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  align-items: center;
+}
+.code.mono {
+  background: var(--cream-soft);
+  color: var(--text-deep);
+  font-weight: 700;
+  font-family: "Courier New", "Menlo", "Consolas", monospace;
+  letter-spacing: 2rpx;
+  padding: 18rpx 28rpx;
+  border-radius: var(--radius-pill);
+  font-size: 36rpx;
+  flex: 1 1 240rpx;
+  text-align: center;
+  min-width: 0;
+  border: 3rpx solid var(--line-sketch);
+}
+.soft-chip.tap { cursor: pointer; }
+.bind-block {
+  display: block;
+  margin-top: 16rpx;
+}
+.bind-input-field {
+  display: block;
+  width: 100%;
+  min-height: 96rpx;
+  font-size: 32rpx;
+  padding: 24rpx 28rpx;
+  box-sizing: border-box;
+  color: var(--text-deep);
+  margin-bottom: 4rpx;
+}
+/* 原生 button 元素（M1 可读性要求：永远可见、原生点击反馈、app.wxss 已去默认边框） */
+.bind-btn {
+  display: block;
+  width: 100%;
+  height: 88rpx;
+  line-height: 84rpx;
+  background: var(--candy-pink);
+  color: #FFFDF9;
+  font-size: 30rpx;
+  font-weight: 700;
+  border-radius: var(--radius-chunky);
+  border: none;
+  text-align: center;
+  margin-top: 16rpx;
+  box-shadow: var(--shadow-candy);
+}
+.bind-btn::after { border: none; }
+.bind-btn:active { transform: translateY(2rpx); box-shadow: 0 6rpx 0 var(--candy-pink-deep); }
+.candy-btn { display: block; text-align: center; }
+.candy-ghost {
+  display: block;
+  text-align: center;
+  background: var(--card);
+  color: var(--text-deep);
+  font-weight: 600;
+  font-size: 28rpx;
+  border-radius: var(--radius-chunky);
+  padding: 24rpx 0;
+  border: 3rpx solid var(--line-sketch);
+}
+.pending-card { }
+
+/* ==========================
+   M6 A2 伙伴版小结
+   ========================== */
+.summary-text {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  color: var(--text-deep);
+  line-height: 1.75;
+}
+
+/* ==========================
+   M7/M8 双入口（并排便签卡）
+   ========================== */
+.entry-row {
+  display: flex;
+  gap: 18rpx;
+}
+.entry-card {
+  flex: 1;
+  position: relative;
+  padding: 30rpx 24rpx 26rpx;
+  min-height: 160rpx;
+  cursor: pointer;
+}
+.entry-card .note-num { width: 48rpx; height: 48rpx; font-size: 28rpx; }
+.entry-title { margin-top: 14rpx; font-size: 30rpx; font-weight: 700; color: var(--text-deep); }
+.entry-sub { margin-top: 8rpx; font-size: 22rpx; color: var(--text-soft); line-height: 1.5; }
+
+/* ==========================
+   经期（紫色便签 + 纸感）
+   ========================== */
+.note-stripe { position: relative; overflow: hidden; }
+
+/* ==========================
+   站内未读提示（微信订阅消息降级方案）
+   —— 做成一条窄便签，不抢纪念日卡片的视觉重心
+   ========================== */
+.notify-banner {
+  padding: 22rpx 26rpx;
+  background: var(--sticky-yellow-bg);
+}
+.nb-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--text-deep);
+}
+.nb-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+/* ==========================
+   微信消息提醒（授权入口）
+   ========================== */
+.notify-hint {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+.notify-btn {
+  margin-top: 18rpx;
+  font-size: 27rpx;
+}
+.notify-foot {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 21rpx;
+  line-height: 1.65;
+  color: var(--text-faint);
+}
+
+/* ==========================
+   V1.1 收尾 · 紧凑设置区（心愿 / 称呼）
+   —— 标题行常显，明细按需展开，避免大卡片重复占屏
+   ========================== */
+.name-toggle { margin-left: 10rpx; }
+.name-body { margin-top: 16rpx; }
+.wish-body { margin-top: 10rpx; }
+.wish-more { display: block; margin-top: 14rpx; text-align: right; }
+.msg-more {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--text-faint);
+  text-align: center;
+}

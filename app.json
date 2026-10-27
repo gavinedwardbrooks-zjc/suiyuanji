@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/record/record",
+    "pages/reading/reading",
+    "pages/reading-txt/reading-txt",
+    "pages/writing-edit/writing-edit",
+    "pages/book-edit/book-edit",
+    "pages/calendar/calendar",
+    "pages/ours/ours",
+    "pages/mine/mine",
+    "pages/privacy/privacy",
+    "pages/food/food",
+    "pages/recipe/recipe",
+    "pages/travel/travel",
+    "pages/travel-detail/travel-detail"
+  ],
+  "window": {
+    "backgroundColor": "#FBF5EA",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FBF5EA",
+    "navigationBarTitleText": "碎愿集",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#9C8B80",
+    "selectedColor": "#E07F95",
+    "backgroundColor": "#FFF9F0",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/record/record", "text": "记录" },
+      { "pagePath": "pages/reading/reading", "text": "纸间心事" },
+      { "pagePath": "pages/calendar/calendar", "text": "日历" },
+      { "pagePath": "pages/ours/ours", "text": "我们" }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,31 @@
+@import "/style/theme.wxss";
+@import "/style/handdrawn.wxss";
+
+page {
+  /* 全站背景升级：奶油底纸感（替代原 --bg 单色） */
+  background: var(--cream-bg);
+  color: var(--ink);
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.6;
+  /* 顶部安全区：避免 iPhone 刘海/挖孔遮挡，48rpx 预留 */
+  padding-top: env(safe-area-inset-top);
+}
+
+view, text, input, textarea, scroll-view, button { box-sizing: border-box; }
+
+/* 通用页面内边距（治愈系更宽松） */
+.page-pad { padding: 28rpx 28rpx 60rpx; }
+
+/* 去除 button 默认边框 */
+button { padding: 0; margin: 0; background: none; line-height: normal; }
+button::after { border: none; }
+
+/* 文本省略 */
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 安全区底部：tabBar 上方留白 */
+.safe-bottom { padding-bottom: calc(40rpx + env(safe-area-inset-bottom)); }
+
+/* 全局装饰：奶油底径向轻微高光（仅装饰，不影响内容） */
+.with-cream { background: var(--cream-bg); }

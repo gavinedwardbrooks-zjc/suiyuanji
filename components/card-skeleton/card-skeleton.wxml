@@ -1,0 +1,10 @@
+<view class="sk" style="{{bg ? 'background:' + bg + ';' : ''}}">
+  <view wx:if="{{title}}" class="head row-between">
+    <view class="col">
+      <text class="section-title">{{title}}</text>
+      <text wx:if="{{sub}}" class="section-sub">{{sub}}</text>
+    </view>
+    <slot name="extra"></slot>
+  </view>
+  <slot></slot>
+</view>

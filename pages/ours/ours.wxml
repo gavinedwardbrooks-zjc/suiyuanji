@@ -1,0 +1,190 @@
+<view class="page-pad">
+
+  <!-- Hero：软感小标题（不重绘大插画，"我们"陪伴感靠材质/卡片） -->
+  <view class="hero fade-in">
+    <view class="ht">我们</view>
+  </view>
+
+  <!-- 未绑定：绑定状态机操作区（M1） -->
+  <view wx:if="{{notBound}}" class="block note-yellow fade-in">
+    <text class="section-title">先绑定，再见面</text>
+    <text class="muted small" style="margin-top:14rpx;display:block;">一方生成配对码，另一方输入，确认后就能一起使用。</text>
+
+    <text class="muted small" style="margin-top:14rpx;display:block;">你的绑定码（可复制发给对方）</text>
+    <view class="bind-code-box">
+      <text class="code mono">{{bindCode || '—'}}</text>
+      <view class="soft-chip pink tap" bindtap="copyBindCode">复制</view>
+      <view class="soft-chip blue tap" bindtap="genCode">生成</view>
+    </view>
+
+    <text class="muted small" style="margin-top:24rpx;display:block;">输入对方的绑定码完成绑定：</text>
+    <view class="bind-block">
+      <input class="bind-input-field" placeholder="如 XZ-ABCDEF12" value="{{inputCode}}" bindinput="onInput" />
+      <button class="bind-btn" bindtap="bind">绑定</button>
+    </view>
+
+    <view wx:if="{{pending}}" class="pending-card note-stripe">
+      <block wx:if="{{pending.state === 'waiting_claim'}}">
+        <text class="muted small">绑定码已生成，等对方输入后即可确认</text>
+        <view class="candy-ghost" bindtap="cancelPending" style="margin-top:16rpx;">取消本次绑定</view>
+      </block>
+      <block wx:elif="{{pending.state === 'confirm_needed'}}">
+        <text class="muted small">对方已输入你的绑定码，是否同意绑定？</text>
+        <view class="row" style="gap:14rpx;margin-top:16rpx;">
+          <view class="candy-btn flex-1" data-accept="1" bindtap="confirmPending">同意</view>
+          <view class="candy-ghost flex-1" data-accept="0" bindtap="confirmPending">拒绝</view>
+        </view>
+      </block>
+      <block wx:elif="{{pending.state === 'waiting_confirm'}}">
+        <text class="muted small">已提交绑定码，等待对方确认</text>
+      </block>
+    </view>
+  </view>
+
+  <!-- 已绑定：我们内容（M5 层级） -->
+  <block wx:elif="{{!loading}}">
+
+    <!-- 站内未读提示：微信订阅消息的降级方案，任何时候都可用（不依赖授权/模板） -->
+    <view wx:if="{{unreadMsgs > 0 || newWishes > 0}}" class="block notify-banner fade-in">
+      <text class="nb-title">有新的动静</text>
+      <view class="nb-chips">
+        <view wx:if="{{unreadMsgs > 0}}" class="soft-chip pink">{{unreadMsgs}} 条新悄悄话</view>
+        <view wx:if="{{newWishes > 0}}" class="soft-chip green">{{newWishes}} 个新心愿</view>
+      </view>
+    </view>
+
+    <!-- 纪念日设置（紧凑入口）：大天数展示在首页，本页只负责查看 / 设置 / 修改 -->
+    <view class="block note-pink fade-in">
+      <view class="row-between tap" bindtap="toggleAnni">
+        <text class="section-title">纪念日</text>
+        <view class="row">
+          <text class="section-sub">{{anniversary ? anniLine : '未设置'}}</text>
+          <text class="section-sub name-toggle">{{anniversary ? (anniOpen ? '收起' : '修改') : '设置'}} ›</text>
+        </view>
+      </view>
+      <view wx:if="{{!anniversary || anniOpen}}" class="anni-set">
+        <picker mode="date" value="{{anniversaryPicker}}" end="{{todayStr}}" bindchange="onAnniversary">
+          <view class="picker-val soft-input">{{anniversaryPicker || '选择日期'}}</view>
+        </picker>
+        <view class="candy-btn" bindtap="saveAnniversary" style="margin-top:16rpx;">保存纪念日</view>
+      </view>
+    </view>
+
+    <!-- A1 给 TA 的称呼（本人设置，双方独立，互不覆盖）——紧凑设置区，默认收起 -->
+    <view class="block note-green fade-in">
+      <view class="row-between tap" bindtap="toggleName">
+        <text class="section-title">给 TA 的称呼</text>
+        <view class="row">
+          <text class="section-sub">{{myPartnerName}}</text>
+          <text class="section-sub name-toggle">{{nameOpen ? '收起' : '修改'}} ›</text>
+        </view>
+      </view>
+      <view wx:if="{{nameOpen}}" class="name-body">
+        <view class="bind-block">
+          <input class="bind-input-field" placeholder="例如：小胖、宝宝、亲爱的" value="{{partnerNameInput}}" bindinput="onPartnerNameInput" maxlength="12" />
+          <button class="bind-btn" bindtap="savePartnerName">保存</button>
+        </view>
+        <view class="candy-ghost" bindtap="clearPartnerName" style="margin-top:14rpx;">恢复默认「TA」</view>
+        <text class="muted small" style="margin-top:10rpx;display:block;">只在你这边显示；TA 那边显示的是 TA 给你起的称呼。</text>
+      </view>
+    </view>
+
+    <!-- P1 心愿（紧凑入口；展开后才显示明细与「已安排」管理） -->
+    <view class="block note-blue fade-in">
+      <view class="row-between tap" bindtap="toggleWish">
+        <text class="section-title">{{role === 'him' ? 'TA 的心愿' : '我的心愿'}}</text>
+        <view class="row">
+          <text class="section-sub">{{wishSummary}}</text>
+          <text class="section-sub name-toggle">{{wishOpen ? '收起' : '展开'}} ›</text>
+        </view>
+      </view>
+      <view wx:if="{{wishOpen}}" class="wish-body">
+        <view wx:if="{{wishes.length === 0}}" class="wish-empty muted" bindtap="goRecord">
+          {{role === 'him' ? 'TA 今天还没说想吃什么' : '还没有心愿，去记录页添加「想吃 / 想做」吧'}}
+        </view>
+        <view wx:for="{{wishes}}" wx:key="_id" class="wish row-between fade-in">
+          <view class="wish-left">
+            <view class="soft-chip {{item.type === 'eat' ? 'pink' : 'green'}}">{{item.type === 'eat' ? '想吃' : '想做'}}</view>
+            <text class="wish-txt">{{item.text}}</text>
+          </view>
+          <view class="wish-right">
+            <text wx:if="{{item.status === 'done_by_partner'}}" class="arranged-tag">{{role === 'him' ? '已安排' : 'TA 已安排'}}</text>
+            <view wx:if="{{role === 'him' && item.status === 'pending'}}" class="candy-btn mint mark-btn" data-id="{{item._id}}" bindtap="markWish">已安排</view>
+          </view>
+        </view>
+        <text class="section-sub tap wish-more" bindtap="goRecord">去记录 ›</text>
+      </view>
+    </view>
+
+    <!-- P2 留言（高度上限 + 内部滚动；新消息在底部，可在已加载范围内上滑回看） -->
+    <view class="block note-yellow fade-in">
+      <view class="row-between">
+        <text class="section-title">悄悄话</text>
+        <!-- 数量口径：服务端每次最多返回最近 50 条（MSG_LIMIT）。
+             满 50 条 → 说明可能还有更早的，只能说「最近 50 条」；
+             少于 50 条 → 服务端没有截断，返回的就是全部，才可以说「共 N 条」。
+             两条前提都由测试守着：tests/anni-role-access.test.js B1/B2（不截断即全部）、
+             B7（客户端上限必须等于服务端上限，否则这个判断会失真）。 -->
+        <text wx:if="{{messages.length > 0}}" class="section-sub">{{msgMaxed ? '最近 ' + msgLimit + ' 条' : '共 ' + messages.length + ' 条'}}</text>
+      </view>
+      <scroll-view wx:if="{{messages.length > 0}}" class="msg-scroll" scroll-y scroll-with-animation scroll-top="{{msgScrollTop}}">
+        <view wx:for="{{messages}}" wx:key="_id" class="msg {{item.mine ? 'mine' : ''}}">
+          <view class="msg-bubble">
+            <text>{{item.text}}</text>
+          </view>
+          <view class="msg-meta">
+            <text>{{item.mine ? '我' : myPartnerName}}</text>
+            <text wx:if="{{item.mine && role === 'him'}}" class="read-tag">{{item.readAt ? '已读' : ''}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <view wx:else class="muted small empty-hint">还没有留言，说点什么吧</view>
+      <text wx:if="{{msgMaxed}}" class="msg-more">只显示最近 {{msgLimit}} 条，更早的暂时看不到</text>
+      <view class="msg-input">
+        <input class="soft-input msg-input-field" placeholder="写一句给 TA 的话" value="{{msgInput}}"
+               bindinput="onMsgInput" confirm-type="send" bindconfirm="sendMsg"
+               adjust-position="true" cursor-spacing="24" />
+        <view class="send-btn candy-btn" bindtap="sendMsg">发送</view>
+      </view>
+    </view>
+
+    <!-- M6 A2：伙伴版小结（her/him 均可读） -->
+    <view wx:if="{{partnerSummary}}" class="block note-green fade-in">
+      <text class="section-title">今日小结</text>
+      <text class="summary-text">{{partnerSummary}}</text>
+    </view>
+
+    <!-- M7 + M8：今天吃什么 / 今天去哪里（两入口并排便签） -->
+    <view class="block entry-row">
+      <view class="note-yellow entry-card food-entry" bindtap="goFood">
+        <view class="note-num">1</view>
+        <view class="entry-title">今天吃什么</view>
+        <view class="entry-sub">1 小荤 + 1 素菜 + 1 汤，随机一下 ›</view>
+      </view>
+      <view class="note-blue entry-card food-entry" bindtap="goTravel">
+        <view class="note-num">2</view>
+        <view class="entry-title">今天去哪里</view>
+        <view class="entry-sub">北京 1 天 / 外地 3 天 2 夜 ›</view>
+      </view>
+    </view>
+
+    <!-- 经期预计已移至首页（避免与首页重复）；本页不再展示 -->
+
+    <!-- 预留位置：双方共同待办（与个人待办隔离）。
+         本轮不开发，因此不渲染任何占位卡片，避免出现点了没反应的假入口。
+         将来实现时放在此处：入口 → 列表 → 双方可添加 / 完成 / 删除。 -->
+
+    <!-- 微信消息提醒（一次性订阅，仅授权入口 + 如实状态，不做「已永久开启」） -->
+    <view class="block note-green fade-in">
+      <view class="row-between">
+        <text class="section-title">微信消息提醒</text>
+        <view class="soft-chip {{myQuotaTotal > 0 ? 'green' : 'pink'}}">{{myQuotaTotal > 0 ? '已记录 ' + myQuotaTotal + ' 次' : '未开启'}}</view>
+      </view>
+      <text class="notify-hint">{{notifyHint}}</text>
+      <view class="candy-btn notify-btn" bindtap="notifySub">{{myQuotaTotal > 0 ? '再开启几次' : '开启微信提醒'}}</view>
+      <!-- 一次性订阅只在这里说一次：标题下方只说当前状态，不再重复解释 -->
+      <text class="notify-foot">微信每次仅提醒一次，需要时可再次开启。</text>
+    </view>
+  </block>
+
+</view>

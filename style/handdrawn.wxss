@@ -1,0 +1,385 @@
+/* ============================================================
+   手绘风通用类
+   2026-08-28 治愈系重塑：
+     - 旧 .card / .btn-primary / .pill 等 token 全部保留（不破坏现有引用）
+     - 新增便签条带（reference 图三色便签）/贴纸偏移/糖按钮/装饰元素
+   ============================================================ */
+
+/* 全局手账语言：页面、纸张、便签、贴纸、空白页 */
+.notebook-page { background: var(--notebook-bg); color: var(--ink); }
+.paper-card { background: var(--notebook-card); border: 2rpx solid var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.sticky-note { border-radius: 18rpx 24rpx 20rpx 28rpx; box-shadow: var(--shadow-paper); }
+.tape { background: var(--sticky-pink-bg); opacity: .78; }
+.sticker-tag { display: inline-block; padding: 6rpx 14rpx; border-radius: 10rpx; background: var(--sticky-pink-bg); color: var(--notebook-brown); font-size: 20rpx; font-weight: 700; }
+.notebook-title { color: var(--text-deep); font-size: 42rpx; font-weight: 800; letter-spacing: 2rpx; }
+.handwritten-subtitle { color: var(--text-soft); font-size: 24rpx; letter-spacing: 1rpx; }
+.soft-button { border-radius: var(--radius-pill); background: var(--notebook-pink); color: #FFFDF9; box-shadow: var(--shadow-pink); }
+.dashed-card { border: 3rpx dashed var(--notebook-line); border-radius: var(--radius-soft); background: var(--notebook-card); }
+.empty-journal { border: 3rpx dashed var(--line-sketch); border-radius: var(--radius-soft); background: var(--cream-soft); color: var(--text-soft); }
+
+/* 卡片（旧保留） */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32rpx;
+}
+
+/* 暖色卡片（旧保留，记录页用） */
+.card-warm {
+  background: var(--card-warm);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 28rpx;
+}
+
+/* 手绘描边卡片（旧保留） */
+.hand-border {
+  border: 3rpx solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+/* 柔和阴影（旧保留） */
+.soft-shadow { box-shadow: var(--shadow-sm); }
+
+/* 胶囊标签（旧保留） */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* 段落标题（旧保留） */
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 1rpx;
+}
+.section-sub { font-size: 24rpx; color: var(--ink-soft); }
+
+/* 文字色（旧保留） */
+.muted { color: var(--ink-soft); }
+.faint { color: var(--ink-faint); }
+.pink-text { color: var(--pink-deep); }
+
+/* 布局（旧保留） */
+.row { display: flex; align-items: center; }
+.row-between { display: flex; align-items: center; justify-content: space-between; }
+.col { display: flex; flex-direction: column; }
+.wrap { flex-wrap: wrap; }
+.gap-s { gap: 12rpx; }
+.gap-m { gap: 24rpx; }
+.gap-l { gap: 36rpx; }
+.flex-1 { flex: 1; }
+
+/* 入场动画（旧保留） */
+.fade-in { animation: fadeIn .4s var(--ease) both; }
+.pop-in { animation: popIn .35s var(--ease) both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(18rpx); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* 主按钮（手绘感，PRD §3.1 主色，无渐变；旧保留） */
+.btn-primary {
+  background: var(--pink-deep);
+  color: #FFFDF9;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pink);
+  padding: 22rpx 0;
+  text-align: center;
+}
+.btn-primary.disabled { opacity: .6; }
+.btn-ghost {
+  background: var(--card);
+  color: var(--ink);
+  border-radius: var(--radius-pill);
+  border: 3rpx solid var(--line-strong);
+  padding: 20rpx 0;
+  text-align: center;
+}
+
+/* 顶部容器（旧保留；新请用 .hero-big） */
+.hero {
+  position: relative;
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 28rpx 24rpx;
+  overflow: hidden;
+}
+
+/* ===========================================================
+   2026-08-28 治愈系新增
+   =========================================================== */
+
+/* 大圆角柔软卡片（替代普通 .card 更治愈） */
+.soft-card {
+  background: var(--card);
+  border-radius: var(--radius-soft);
+  box-shadow: var(--shadow-soft-ink);
+  padding: 36rpx 32rpx;
+}
+
+/* 便签条带 — 参考图三色便签主任务卡核心样式 */
+.note-pink {
+  background: var(--sticky-pink-bg);
+  border-radius: var(--radius-soft);
+  border: 3rpx solid var(--sticky-pink-edge);
+  box-shadow: var(--shadow-paper);
+  padding: 30rpx 32rpx;
+}
+.note-yellow {
+  background: var(--sticky-yellow-bg);
+  border-radius: var(--radius-soft);
+  border: 3rpx solid var(--sticky-yellow-edge);
+  box-shadow: var(--shadow-paper);
+  padding: 30rpx 32rpx;
+}
+.note-blue {
+  background: var(--sticky-blue-bg);
+  border-radius: var(--radius-soft);
+  border: 3rpx solid var(--sticky-blue-edge);
+  box-shadow: var(--shadow-paper);
+  padding: 30rpx 32rpx;
+}
+.note-green {
+  background: var(--sticky-green-bg);
+  border-radius: var(--radius-soft);
+  border: 3rpx solid var(--sticky-green-edge);
+  box-shadow: var(--shadow-paper);
+  padding: 30rpx 32rpx;
+}
+.note-purple {
+  background: var(--sticky-purple-bg);
+  border-radius: var(--radius-soft);
+  border: 3rpx solid var(--sticky-purple-edge);
+  box-shadow: var(--shadow-paper);
+  padding: 30rpx 32rpx;
+}
+/* 便签圆角数字徽章（参考图 1/2/3 大圆数字） */
+.note-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 36rpx;
+  color: #FFFDF9;
+  background: var(--pink-deep);
+}
+.note-pink .note-num { background: var(--pink-deep); }
+.note-yellow .note-num { background: var(--yellow-deep); color: #FFFDF9; }
+.note-blue .note-num { background: var(--blue-deep); }
+.note-green .note-num { background: var(--green-deep); }
+.note-purple .note-num { background: #B89DD8; }
+
+/* 便签便签纸纹理叠加（手账纸感） */
+.note-stripe {
+  position: relative;
+  overflow: hidden;
+}
+.note-stripe::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(180deg, transparent 0, transparent calc(28rpx - 1rpx), var(--sticky-yellow-edge) 28rpx, transparent calc(28rpx + 1rpx));
+  background-size: 100% 60rpx;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* 贴纸偏移卡片（参考图便签倾斜感） */
+.sticker {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius-soft);
+  box-shadow: var(--shadow-paper);
+  padding: 32rpx 28rpx;
+  transform: rotate(-1deg);
+}
+.sticker.right { transform: rotate(1.2deg); }
+.sticker.flat { transform: none; }
+
+/* 糖感主按钮（更胖更可爱，替换主 CTA 用） */
+.candy-btn {
+  position: relative;
+  display: block;
+  text-align: center;
+  background: var(--candy-pink);
+  color: #FFFDF9;
+  font-weight: 700;
+  font-size: 32rpx;
+  border-radius: var(--radius-chunky);
+  padding: 26rpx 0;
+  box-shadow: var(--shadow-candy);
+  letter-spacing: 1rpx;
+}
+.candy-btn:active { transform: translateY(2rpx); box-shadow: 0 6rpx 0 var(--candy-pink-deep); }
+.candy-btn.mint {
+  background: var(--candy-mint);
+  box-shadow: var(--shadow-candy-mint);
+  color: #2F5648;
+}
+.candy-btn.mint:active { box-shadow: 0 6rpx 0 var(--candy-mint-deep); }
+
+/* 软糖次按钮（幽灵胖按钮） */
+.candy-ghost {
+  display: block;
+  text-align: center;
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 28rpx;
+  border-radius: var(--radius-chunky);
+  padding: 24rpx 0;
+  border: 3rpx solid var(--line-sketch);
+}
+
+/* 软 chips / tag（贴纸感小标签） */
+.soft-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 22rpx;
+  border-radius: var(--radius-pill);
+  font-size: 24rpx;
+  background: var(--cream-soft);
+  color: var(--text-deep);
+  border: 2rpx solid var(--line);
+}
+.soft-chip.pink   { background: var(--sticky-pink-bg);   color: #B6506A; border-color: var(--sticky-pink-edge); }
+.soft-chip.yellow { background: var(--sticky-yellow-bg); color: #8A6C1E; border-color: var(--sticky-yellow-edge); }
+.soft-chip.blue   { background: var(--sticky-blue-bg);   color: #2F6B86; border-color: var(--sticky-blue-edge); }
+.soft-chip.green  { background: var(--sticky-green-bg);  color: #2F6E37; border-color: var(--sticky-green-edge); }
+
+/* 软输入框（奶油背景大圆角） */
+.soft-input {
+  background: var(--cream-soft);
+  border: 3rpx solid var(--line);
+  border-radius: var(--radius-soft);
+  padding: 22rpx 26rpx;
+  font-size: 28rpx;
+  color: var(--text-deep);
+}
+.soft-input::placeholder { color: var(--text-faint); }
+
+/* Hero 大插画区（参考图顶部大奶油 Hero） */
+.hero-big {
+  position: relative;
+  background: linear-gradient(180deg, var(--illustr-paper) 0%, var(--cream-bg) 100%);
+  border-radius: var(--radius-soft);
+  padding: 40rpx 36rpx;
+  margin: 24rpx 0;
+  overflow: hidden;
+  border: 3rpx solid var(--line-sketch);
+  box-shadow: var(--shadow-soft-ink);
+}
+.hero-big .ht {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: var(--text-deep);
+  letter-spacing: 2rpx;
+  line-height: 1.3;
+}
+.hero-big .hs {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  color: var(--text-soft);
+}
+.hero-big .hero-art {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 标题大字（数字标题，如纪念日天数 / 分数） */
+.hand-num {
+  font-size: 88rpx;
+  font-weight: 800;
+  color: var(--text-deep);
+  line-height: 1;
+  letter-spacing: -2rpx;
+}
+.hand-num.pink   { color: var(--candy-pink-deep); }
+.hand-num.yellow { color: var(--yellow-deep); }
+
+/* 装饰元素（小花/云朵/星星，便签层不影响布局）
+   2026-08-28 修复：SVG 无显式 width/height 时微信真机按固有尺寸解析，
+   无尺寸的 image 会按默认大尺寸渲染（巨大星星/胶带）→ 全局补安全小尺寸 48rpx，
+   页面如需更大尺寸用专属 class 覆盖 */
+.deco { position: absolute; pointer-events: none; width: 48rpx; height: 48rpx; }
+.deco.tl { top: 12rpx; left: 16rpx; }
+.deco.tr { top: 12rpx; right: 16rpx; }
+.deco.bl { bottom: 12rpx; left: 16rpx; }
+.deco.br { bottom: 12rpx; right: 16rpx; }
+.deco.cn { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+/* 空状态容器 — 居中、可爱 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18rpx;
+  padding: 80rpx 0;
+  color: var(--text-soft);
+}
+.empty-state .empty-art {
+  width: 240rpx;
+  height: 200rpx;
+  opacity: 0.92;
+}
+.empty-state .empty-title {
+  font-size: 30rpx;
+  color: var(--text-deep);
+  font-weight: 600;
+}
+.empty-state .empty-sub {
+  font-size: 24rpx;
+  color: var(--text-soft);
+  text-align: center;
+  max-width: 80%;
+  line-height: 1.6;
+}
+
+/* 圆胖便签纸外接框（用于纪念日/纪念卡片） */
+.paper-frame {
+  position: relative;
+  background: var(--illustr-paper);
+  border-radius: var(--radius-soft);
+  border: 4rpx solid var(--line-sketch);
+  padding: 32rpx;
+  box-shadow: var(--shadow-paper);
+}
+
+/* 治愈系留白 */
+.gap-xs { gap: 6rpx; }
+.gap-xl { gap: 56rpx; }
+.mt-s { margin-top: 12rpx; }
+.mt-m { margin-top: 28rpx; }
+.mt-l { margin-top: 48rpx; }
+.pad-x { padding-left: 28rpx; padding-right: 28rpx; }
+
+/* 小插画占位（圆胖版，用 SVG 叠在角落） */
+.art-pad {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--cream-soft);
+  border-radius: var(--radius-soft);
+  padding: 30rpx;
+}

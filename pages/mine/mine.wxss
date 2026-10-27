@@ -1,0 +1,88 @@
+.hero { display: flex; flex-direction: column; align-items: center; padding: 20rpx 0; }
+.ht { font-size: 38rpx; font-weight: 700; color: var(--ink); }
+
+.block { margin-top: 26rpx; }
+.block.card { background: var(--cream-soft); border: 2rpx solid var(--line); box-shadow: var(--shadow-paper); }
+.small { font-size: 24rpx; }
+.section-title { color: var(--text-deep); letter-spacing: 1rpx; }
+
+/* ---- M1 Binding UI（未绑定状态 · 真机可读） ---- */
+.bind-code-box {
+  margin-top: 12rpx;
+  display: flex;
+  flex-wrap: wrap;          /* 窄屏：码 + 复制 + 生成 换行；宽屏：单行 */
+  gap: 14rpx;
+  align-items: center;
+}
+.code.mono {
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 700;
+  font-family: "Courier New", "Menlo", "Consolas", monospace;
+  letter-spacing: 2rpx;
+  padding: 18rpx 28rpx;
+  border-radius: var(--radius-pill);
+  font-size: 36rpx;          /* 物理 ~18px */
+  flex: 1 1 240rpx;
+  text-align: center;
+  min-width: 0;
+}
+.mini-btn {
+  background: var(--card);
+  border: 3rpx solid var(--line-strong);
+  color: var(--pink-deep);
+  font-size: 26rpx;
+  padding: 14rpx 28rpx;       /* 物理 ≥44px 高度可点 */
+  border-radius: var(--radius-pill);
+  line-height: 1;
+  white-space: nowrap;
+}
+/* Desktop 电脑登录扫码入口按钮（同 mini-btn，加宽可点区域） */
+.desktop-scan-btn {
+  display: inline-block;
+  margin-top: 18rpx;
+  padding: 16rpx 34rpx;
+  font-size: 28rpx;
+  border-width: 3rpx;
+  min-height: 60rpx;
+  line-height: 28rpx;
+}
+/* 非 flex 块级堆叠容器，避开 iOS flex 子项塌缩问题 */
+.bind-block {
+  display: block;
+  margin-top: 16rpx;
+}
+.bind-input-field {
+  display: block;
+  width: 100%;
+  min-height: 96rpx;
+  font-size: 32rpx;
+  background: var(--card-warm);
+  border-radius: var(--radius-sm);
+  padding: 24rpx 28rpx;
+  box-sizing: border-box;
+  color: var(--ink);
+  margin-bottom: 20rpx;
+}
+/* 原生 button 元素：永远可见、原生点击反馈、app.wxss 已去默认边框 */
+.bind-btn {
+  display: block;
+  width: 100%;
+  height: 88rpx;
+  line-height: 84rpx;
+  background: var(--pink-deep);
+  color: #FFFDF9;
+  font-size: 30rpx;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: none;
+  text-align: center;
+}
+.bind-btn::after { border: none; }
+.pending-card {
+  margin-top: 20rpx;
+  padding: 20rpx 24rpx;
+  background: var(--card-warm);
+  border-radius: var(--radius-sm);
+  border: 3rpx dashed var(--line-strong);
+}

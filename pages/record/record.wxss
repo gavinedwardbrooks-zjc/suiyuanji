@@ -1,0 +1,388 @@
+.block { margin-top: 28rpx; }
+page { background: var(--notebook-bg); }
+.hero { padding: 28rpx 22rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero-date { font-size: 38rpx; color: var(--notebook-brown); letter-spacing: 2rpx; }
+.block { padding: 28rpx; border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+textarea, input { background: var(--notebook-card); border: 2rpx solid var(--notebook-line); border-radius: 20rpx; }
+.save-btn, .btn-primary { background: var(--notebook-pink); box-shadow: var(--shadow-pink); }
+
+/* 顶部：日期 + 历史翻页（R6） */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+.hero-nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--line-strong);
+  background: var(--card);
+  color: var(--pink-deep);
+  font-size: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hero-mid { display: flex; flex-direction: column; align-items: center; }
+.hero-date { font-size: 34rpx; font-weight: 600; color: var(--ink); }
+.hero-sub { font-size: 22rpx; color: var(--ink-soft); }
+.back-today {
+  font-size: 24rpx;
+  color: var(--pink-deep);
+  border-bottom: 3rpx solid var(--pink);
+  padding-bottom: 2rpx;
+}
+
+/* ============================================================
+   record 页统一行内输入（2026-08-28 重构）
+   微信原生 input 兼容：固定 height + 仅水平 padding（不用上下 padding
+   挤文字，不设 line-height/display:flex，原生垂直居中）
+   ============================================================ */
+.record-inline-input {
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
+  height: 72rpx;
+  min-height: 72rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: var(--text-deep);
+  background: var(--cream-soft);
+  border: 3rpx solid var(--line);
+  border-radius: var(--radius-soft);
+}
+.record-inline-input::placeholder { color: var(--text-faint); }
+
+/* 小事添加行：input 主区(flex:1) + ＋小圆钮(三锁 72rpx) */
+.todo-compose-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+.todo-compose-input {
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
+  height: 76rpx;
+  min-height: 76rpx;
+  background: rgba(255, 255, 255, 0.88);
+  border: 3rpx solid var(--line);
+  border-radius: 28rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: var(--text-deep);
+}
+.todo-compose-input::placeholder { color: var(--text-faint); }
+
+/* ＋ 按钮：width/min-width/max-width 三锁同值 + 零 padding + 正圆
+   防微信原生 button UA 默认样式（min-width 强约束/auto margin/padding）污染 */
+.todo-action-btn {
+  flex: 0 0 72rpx;
+  width: 72rpx;
+  min-width: 72rpx;
+  max-width: 72rpx;
+  height: 72rpx;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--candy-mint);
+  color: #2F5648;
+  font-size: 34rpx;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.todo-action-btn::after { border: none; }
+
+/* 待办列表：便签式浅卡片行 */
+.todo-list {
+  margin-top: 18rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.todo-empty {
+  margin-top: 10rpx;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: 24rpx;
+  color: var(--text-faint);
+}
+
+/* 三段日记（R5） */
+.seg { margin-bottom: 22rpx; }
+.seg:last-child { margin-bottom: 0; }
+.seg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.seg-label { font-size: 26rpx; color: var(--ink-soft); }
+.seg-count { font-size: 22rpx; color: var(--ink-faint); }
+.seg-area {
+  width: 100%;
+  margin-top: 10rpx;
+  min-height: 96rpx;
+  background: var(--card-warm);
+  border-radius: var(--radius-sm);
+  padding: 18rpx 22rpx;
+  font-size: 28rpx;
+  color: var(--ink);
+}
+.no-write {
+  margin-top: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  font-size: 24rpx;
+  color: var(--ink-faint);
+}
+.no-write-ico {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+/* 心愿（R4）明确三列：[icon-wrap] [input flex:1] [action-btn flex-shrink:0] */
+.wish-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wish-icon-wrap {
+  width: 48rpx;
+  height: 48rpx;
+  flex: 0 0 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wish-ico {
+  width: 36rpx;
+  height: 36rpx;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+.wish-action-btn {
+  flex: 0 0 auto;
+  min-width: 108rpx;
+  height: 72rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pink-deep);
+  color: #FFFDF9;
+  font-size: 26rpx;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  box-shadow: none;
+}
+.wish-action-btn.mint {
+  background: var(--candy-mint);
+  color: #2F5648;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 14rpx; margin-top: 16rpx; }
+.wchip {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: var(--card);
+  border: 3rpx solid var(--line);
+  border-radius: 999rpx;
+  padding: 10rpx 10rpx 10rpx 22rpx;
+  font-size: 26rpx;
+  color: var(--ink);
+}
+.wchip-del {
+  color: var(--ink-faint);
+  font-size: 30rpx;
+  line-height: 1;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+}
+
+/* 保存（R1）—— 专用 record-save-btn：不继承 .btn-primary/.candy-btn 的圆钮或阴影 */
+.save-bar {
+  margin-top: 40rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+.record-save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: static;
+  width: 84%;
+  min-height: 96rpx;
+  border-radius: var(--radius-chunky);
+  background: var(--candy-pink);
+  color: #FFFDF9;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  box-shadow: var(--shadow-soft-ink);
+}
+.record-save-btn.disabled { opacity: 0.6; }
+.saved-tip { font-size: 26rpx; color: var(--green-deep); }
+
+/* ============================================================
+   V1.1 · P3.1：日期级分享（沿用便签/奶白输入框体系）
+   ============================================================ */
+.candy-btn.disabled,
+.record-save-btn.disabled { opacity: 0.55; }
+.share-toggle {
+  width: 100%;
+  text-align: center;
+}
+.share-warn {
+  font-size: 24rpx;
+  color: #B6506A;
+  line-height: 1.5;
+}
+/* 陪伴方看到的共享日记 */
+.share-seg { margin-top: 18rpx; }
+.share-seg-label {
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  letter-spacing: 2rpx;
+}
+.share-seg-text {
+  margin-top: 8rpx;
+  padding: 18rpx 20rpx;
+  background: var(--card);
+  border: 2rpx solid var(--line);
+  border-radius: var(--radius-chunky);
+  font-size: 27rpx;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.share-retry {
+  margin-left: 12rpx;
+  color: var(--pink-deep);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   V1.1：一起做的事（双方共同待办 couple_todos）
+   与上面「小事 · 提醒事项」视觉上刻意区分（绿便签 / 日期标签 / 粉色添加）。
+   输入行沿用本页既有的 .record-inline-input 契约：
+   固定 height + 只有水平 padding + box-sizing —— 原生 input 自己垂直居中，
+   不用上下 padding 挤文字（那正是占位文字被裁的原因）。
+   ============================================================ */
+.todo-scope-row { display: flex; gap: 14rpx; margin-top: 14rpx; }
+.scope-chip {
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.72);
+  border: 3rpx solid var(--line);
+  border-radius: 999rpx;
+  box-sizing: border-box;
+}
+.scope-chip.on { color: var(--text-deep); background: var(--candy-mint); border-color: var(--green-deep); }
+
+.shared-todo-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 14rpx 0;
+  border-bottom: 2rpx dashed var(--line);
+}
+.shared-todo-check {
+  position: relative;
+  width: 34rpx; height: 34rpx;
+  flex-shrink: 0;
+  margin-top: 6rpx;
+  box-sizing: border-box;
+  border: 3rpx solid var(--line);
+  border-radius: 10rpx;
+}
+.shared-todo-check.on { background: var(--candy-mint); border-color: var(--green-deep); }
+/* 勾选符号用两条边框画出来：不依赖任何 emoji / 特殊符号字体 */
+.shared-todo-check.on::after {
+  content: '';
+  position: absolute;
+  left: 5rpx; top: 7rpx;
+  width: 16rpx; height: 8rpx;
+  border-left: 4rpx solid var(--text-deep);
+  border-bottom: 4rpx solid var(--text-deep);
+  transform: rotate(-45deg);
+}
+.shared-todo-body { flex: 1 1 0%; min-width: 0; }
+.shared-todo-text { display: block; font-size: 28rpx; color: var(--text-deep); word-break: break-all; }
+.shared-todo-text.done { color: var(--text-faint); text-decoration: line-through; }
+.shared-todo-meta { display: block; margin-top: 4rpx; font-size: 22rpx; color: var(--text-faint); }
+.shared-todo-del { flex-shrink: 0; margin-top: 6rpx; font-size: 22rpx; color: var(--text-faint); }
+.shared-todo-more { display: block; margin-top: 14rpx; font-size: 24rpx; color: var(--text-faint); text-align: center; }
+
+.shared-todo-add {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 16rpx;
+  margin-top: 18rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* 输入框：flex 子项必须能收缩（min-width:0），否则长占位会把「添加」挤出屏幕 */
+.shared-todo-input {
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
+  height: 76rpx;
+  min-height: 76rpx;
+  box-sizing: border-box;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+}
+/* 粉色「添加」：不收缩、不换行；高度与输入框同值，保证同一条水平线 */
+.shared-todo-btn {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: 128rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 26rpx;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #FFFDF9;
+  /* 与「我们」页原来的粉色添加按钮同一档（candy-btn 主粉） */
+  background: var(--candy-pink);
+  border-radius: var(--radius-chunky, 999rpx);
+}
+.shared-todo-btn.disabled { opacity: 0.6; }

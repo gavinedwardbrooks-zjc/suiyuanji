@@ -1,0 +1,34 @@
+page { background: var(--notebook-bg); }
+.hero { display: flex; flex-direction: column; align-items: center; gap: 4rpx; padding: 28rpx 22rpx 18rpx; background: var(--notebook-card); border: 2rpx dashed var(--notebook-line); border-radius: var(--radius-soft); box-shadow: var(--shadow-paper); }
+.hero .ht { color: var(--notebook-brown); letter-spacing: 2rpx; }
+.ht { font-size: 40rpx; font-weight: 700; color: var(--text-deep); }
+.hs { font-size: 24rpx; color: var(--text-soft); }
+
+.meal-card {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  padding: 28rpx 24rpx;
+  cursor: pointer;
+  position: relative;
+}
+.meal-card .mc-cat { flex-shrink: 0; }
+.mc-body { display: flex; flex-direction: column; gap: 6rpx; }
+.mc-label { font-size: 24rpx; color: var(--text-soft); }
+.mc-name { font-size: 32rpx; font-weight: 700; color: var(--text-deep); }
+
+.center-col { display: flex; flex-direction: column; align-items: center; gap: 16rpx; padding: 30rpx 0; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+  padding: 50rpx 24rpx;
+}
+.empty-title { font-size: 30rpx; color: var(--text-deep); font-weight: 700; }
+.empty-sub { font-size: 24rpx; color: var(--text-soft); text-align: center; }
+.err-txt { margin-top: 12rpx; color: var(--green-deep); font-size: 26rpx; }
+
+/* V1.1 今日决定：确认按钮与已确认提示 */
+.confirm-box { padding-top: 24rpx; }
+.confirm-btn { min-width: 320rpx; }
+.confirm-btn.confirmed { background: var(--candy-mint, #CDEBD8); color: var(--text-deep); }
+.confirm-tip { font-size: 24rpx; color: var(--text-soft); text-align: center; }

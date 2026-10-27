@@ -1,0 +1,68 @@
+<view class="page-pad">
+
+  <view class="hero fade-in">
+    <view class="rt">纸间心事</view>
+    <view class="rs">读一点，也写一点。</view>
+  </view>
+
+  <view class="entry-grid mt-m">
+    <view class="entry-card book-entry" bindtap="openBookEditor"><text class="entry-mark">＋</text><text class="entry-title">添加一本书</text><text class="entry-sub">记下想读的书</text></view>
+    <view class="entry-card write-entry" bindtap="openWriting"><text class="entry-mark">✎</text><text class="entry-title">写点什么</text><text class="entry-sub">把想法留下来</text></view>
+  </view>
+  <view class="legacy-entry" bindtap="importBook">{{uploading ? '正在存到本机…' : '导入 PDF / TXT 到本机'}}</view>
+
+  <view class="section-heading mt-m"><text>阅读清单</text><text class="section-note">在读 · 想读 · 已读</text></view>
+  <view class="local-storage-note mt-s">
+    <text class="lsn-title">本机文件 {{localUsageText}}</text>
+    <view class="lsn-bar"><view class="lsn-fill" style="width: {{localUsagePercent}}%;"></view></view>
+    <text class="lsn-sub">只保存在这台设备，清理小程序数据或换机后会丢失</text>
+    <text wx:if="{{localUsageWarning}}" class="lsn-warn">本机空间接近上限，建议先清理再导入</text>
+    <text wx:if="{{localIndexCorrupted}}" class="lsn-warn">本机书单索引异常，已暂停本机书籍操作，请勿清理小程序数据</text>
+  </view>
+  <view class="book-list mt-m">
+    <view wx:for="{{localBooks}}" wx:key="localId" class="book note-yellow row-between fade-in" data-id="{{item.localId}}" data-b="{{item}}" bindtap="openLocalBook">
+      <view class="cover" style="background: {{item.coverColor}};">
+        <text class="cover-glyph">{{item.ext === 'txt' ? 'TXT' : 'PDF'}}</text>
+      </view>
+      <view class="info flex-1">
+        <view class="book-title-row">
+          <text class="b-name ellipsis">{{item.name}}</text>
+          <text class="file-sticker">本机</text>
+          <text wx:if="{{item.missing}}" class="file-sticker">已丢失</text>
+        </view>
+        <text class="b-sub">{{item.localHint}}</text>
+        <text wx:if="{{item.localMeta}}" class="b-sub">{{item.localMeta}}</text>
+      </view>
+      <text class="b-go">›</text>
+      <view class="b-del" catchtap="deleteLocalBook" data-id="{{item.localId}}">×</view>
+    </view>
+    <view wx:for="{{books}}" wx:key="_id" class="book note-yellow row-between fade-in" data-b="{{item}}" bindtap="openBook">
+      <view class="cover" style="background: {{item.coverColor}};">
+        <image wx:if="{{item.coverSvg}}" src="{{item.coverSvg}}" mode="aspectFit" class="cover-svg" />
+      </view>
+      <view class="info flex-1">
+        <view class="book-title-row">
+          <text class="b-name ellipsis">{{item.name}}</text>
+          <text wx:if="{{item.isLegacyFile}}" class="file-sticker">旧版文件记录</text>
+          <text wx:elif="{{item.status === 'finished'}}" class="file-sticker">已读</text>
+          <text wx:elif="{{item.status === 'want'}}" class="file-sticker">想读</text>
+          <text wx:else class="file-sticker">在读</text>
+        </view>
+        <view class="b-bar"><view class="b-fill" style="width: {{item.pct}}%; background: {{item.coverColor}};"></view></view>
+        <text class="b-sub">{{item.minutes || 0}} 分钟 · 已读 {{item.pct}}%</text>
+      </view>
+      <view wx:if="{{item.fileID}}" class="b-get {{item.migratedLocalId ? 'done' : ''}}" catchtap="migrateCloudBook" data-b="{{item}}">{{item.migratedLocalId ? '已存' : '存本机'}}</view>
+      <view class="b-remove" catchtap="deleteCloudBook" data-id="{{item._id}}">删除</view>
+    </view>
+  </view>
+
+  <view class="writing-section mt-m"><view class="section-heading"><text>最近写过</text><text class="section-note">只属于你的文字</text></view><view wx:for="{{writings}}" wx:key="_id" class="writing-item paper-card" data-id="{{item._id}}" bindtap="openWritingItem"><view class="writing-main"><text class="writing-name">{{item.title || '未命名随笔'}}</text><text class="writing-meta">{{item.type}} · {{item.wordCount}} 字 · {{item.status === 'draft' ? '草稿' : '已完成'}}</text></view><text>›</text></view><view wx:if="{{writings.length === 0}}" class="empty-journal">还没有写过东西，想到什么，就先留下来吧。</view></view>
+
+  <view wx:if="{{books.length === 0 && localBooks.length === 0}}" class="note-stripe note-yellow mt-m empty-state">
+    <image wx:if="{{decoBookSrc}}" class="empty-art" src="{{decoBookSrc}}" mode="aspectFit" />
+    <text class="empty-title">书架还空空的</text>
+    <text class="empty-sub">导入一本书，从今天开始读</text>
+    <view class="candy-btn mt-l" style="width:60%;" bindtap="importBook">开始导入</view>
+  </view>
+
+</view>

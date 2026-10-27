@@ -1,0 +1,106 @@
+/* ============================================================
+   goal-card · 今日目标单条（2026-10-16 纵向间距修复）
+
+   现象：记录页「今日目标 · 三件大事」三项之间被拉得很开，卡片整体过长，
+         存在大量不必要的纵向空白。
+
+   根因（不是 margin/padding 过大，而是**行布局在组件内失效**）：
+     自定义组件的默认样式隔离是 styleIsolation: isolated —— 官方文档明确
+     「app.wxss 中的样式、组件所在页面的样式对自定义组件无效」。
+     本组件此前把行布局交给了 app.wxss（style/handdrawn.wxss）里的全局
+     class `.row-between`，它进不到组件内部，于是：
+       · .top  退化为 block → 里面的 .num / .done-box 都是 display:flex 的
+         块级节点，各自独占一行 → 该行由 46rpx 变成 92rpx
+       · .remind 退化为 block → 「到点提醒」文字与开关各占一行 → 由 48rpx
+         变成约 85rpx
+     两条相加每张卡片被纵向撑高 ~1/3，三张叠起来就是「被拉得很开」。
+
+   修复原则（只动组件自己的 WXSS，不改结构、不改业务逻辑）：
+     1. .top / .remind **自带** flex 行布局，不再依赖组件外的全局 class
+     2. 输入框去掉上下 padding（原生 input 靠固定高度居中），压缩固定高度
+     3. 缩小纵向 margin / padding，但保留每个元素的可点区域
+     4. 不设任何 height / min-height / flex-grow 去「撑开」三项任务
+   ============================================================ */
+.gc {
+  box-sizing: border-box;
+  border-width: 3rpx;
+  border-radius: var(--radius);
+  padding: 14rpx 16rpx;
+  margin-bottom: 10rpx;
+  transition: all .3s var(--ease);
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+.num {
+  width: 46rpx; height: 46rpx;
+  border-radius: 14rpx;
+  color: #fff;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26rpx;
+}
+.done-box {
+  width: 46rpx; height: 46rpx;
+  border-radius: 14rpx;
+  border-width: 3rpx;
+  border-style: solid;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 28rpx;
+}
+/* 目标输入框：与记录页其它 input 同一套做法（固定 height + 仅水平 padding，
+   原生 input 自己垂直居中）—— 不再用 min-height + 上下 padding 把行撑高 */
+.ginput {
+  display: block;
+  width: 100%;
+  height: 76rpx;
+  min-height: 76rpx;
+  box-sizing: border-box;
+  font-size: 30rpx;
+  color: var(--ink);
+  padding: 0 18rpx;
+  background: var(--cream-soft);
+  border: 2rpx solid var(--line);
+  border-radius: var(--radius-sm);
+}
+/* 「到点提醒」行：同 .top，必须自带 flex 行布局（前面已说明原因） */
+.remind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+  padding-top: 10rpx;
+  border-top: 2rpx dashed rgba(0,0,0,0.06);
+}
+.rlabel { font-size: 26rpx; color: var(--ink-soft); }
+
+/* 自定义开关 */
+.switch {
+  width: 86rpx; height: 48rpx;
+  border-radius: 999rpx;
+  background: var(--line-strong);
+  position: relative;
+  transition: background .25s;
+}
+.switch.on { background: var(--c); }
+.knob {
+  position: absolute; top: 5rpx; left: 5rpx;
+  width: 38rpx; height: 38rpx;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,.2);
+  transition: left .25s var(--ease);
+}
+.switch.on .knob { left: 43rpx; }
+
+.time-pill {
+  margin-top: 8rpx;
+  display: inline-block;
+  padding: 10rpx 22rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--ink);
+}

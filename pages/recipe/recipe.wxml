@@ -1,0 +1,65 @@
+<view class="page-pad">
+
+  <!-- 未找到 -->
+  <view wx:if="{{notFound}}" class="note-yellow mt-m empty-state">
+    <text class="empty-title">菜谱不存在</text>
+  </view>
+
+  <block wx:elif="{{recipe}}">
+    <view class="hero fade-in">
+      <view class="ht">{{recipe.name}}</view>
+      <view class="hs">{{recipe.category === 'meat' ? '小荤' : recipe.category === 'soup' ? '汤' : '素菜'}}</view>
+    </view>
+
+    <!-- 只读态 -->
+    <block wx:if="{{!editing}}">
+      <view class="note-pink mt-m">
+        <text class="section-title">食材</text>
+        <view class="line-list">
+          <view wx:for="{{recipe.ingredients}}" wx:key="index" class="line">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="note-blue mt-m">
+        <text class="section-title">步骤</text>
+        <view class="line-list">
+          <view wx:for="{{recipe.steps}}" wx:key="index" class="line step-line">{{index + 1}}. {{item}}</view>
+        </view>
+      </view>
+
+      <view class="note-yellow mt-m">
+        <text class="section-title">小贴士</text>
+        <view class="line-list">
+          <view wx:for="{{recipe.tips}}" wx:key="index" class="line tip-line">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="row mt-m" style="gap:16rpx;">
+        <view class="btn-primary flex-1" bindtap="enterEdit">编辑</view>
+        <view class="btn-ghost flex-1 {{generating ? 'disabled' : ''}}" bindtap="regenerate">{{generating ? '生成中…' : 'AI 重新生成'}}</view>
+      </view>
+      <text wx:if="{{error}}" class="err-txt" style="display:block;text-align:center;margin-top:16rpx;">{{error}}</text>
+    </block>
+
+    <!-- 编辑态 -->
+    <block wx:else>
+      <view class="note-pink mt-m">
+        <text class="section-title">食材（每行一种）</text>
+        <textarea class="edit-area soft-input" value="{{draftIngredients}}" bindinput="onIngredients" auto-height />
+      </view>
+      <view class="note-blue mt-m">
+        <text class="section-title">步骤（每行一步）</text>
+        <textarea class="edit-area soft-input" value="{{draftSteps}}" bindinput="onSteps" auto-height />
+      </view>
+      <view class="note-yellow mt-m">
+        <text class="section-title">小贴士（每行一条）</text>
+        <textarea class="edit-area soft-input" value="{{draftTips}}" bindinput="onTips" auto-height />
+      </view>
+      <view class="row mt-m" style="gap:16rpx;">
+        <view class="btn-primary flex-1 {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存'}}</view>
+        <view class="btn-ghost flex-1" bindtap="cancelEdit">取消</view>
+      </view>
+    </block>
+  </block>
+
+</view>

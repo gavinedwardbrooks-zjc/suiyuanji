@@ -1,0 +1,7 @@
+{
+  "name": "deleteAccount",
+  "version": "1.0.0",
+  "description": "数据删除与账号注销（preview / execute）",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

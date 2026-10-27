@@ -1,0 +1,7 @@
+{
+  "name": "getPartnerView",
+  "version": "1.0.0",
+  "description": "伴侣视角：仅读取对方打分/心愿/留言",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

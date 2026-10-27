@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "_openid": "v1_user_001",
+      "role": "her",
+      "nickName": "她",
+      "avatarUrl": "",
+      "coupleId": null,
+      "bindCode": "XZ-OLDCODE1",
+      "createdAt": 1700000000000
+    },
+    {
+      "_openid": "v1_user_002",
+      "role": "him",
+      "nickName": "小宇",
+      "avatarUrl": "",
+      "coupleId": "CZ-OLD1",
+      "bindCode": "XZ-OLDCODE2",
+      "createdAt": 1700000001000
+    }
+  ],
+  "daily_records": [
+    {
+      "_openid": "v1_user_001",
+      "date": "2026-08-20",
+      "goals": [
+        { "text": "读书30分钟", "done": true, "reminderOn": false, "reminderTime": "21:00" },
+        { "text": "早睡", "done": false, "reminderOn": true, "reminderTime": "22:30" },
+        { "text": "给爸妈打电话", "done": false, "reminderOn": false, "reminderTime": "21:00" }
+      ],
+      "todos": [
+        { "text": "浇花", "done": true },
+        { "text": "取快递", "done": false }
+      ],
+      "segments": {
+        "life": "今天去公园散步了",
+        "work": "写完了周报",
+        "growth": "学了 20 个英语单词"
+      },
+      "mood": { "type": "calm", "weather": "sunny" },
+      "score": 4,
+      "readProgress": 30,
+      "wishes": [
+        { "type": "eat", "text": "想吃火锅" },
+        { "type": "do", "text": "想去爬山" }
+      ],
+      "summary": "又度过平静的一天。",
+      "summaryAt": "8月20日",
+      "createdAt": 1700002000000,
+      "updatedAt": 1700002005000
+    }
+  ],
+  "profiles": [
+    {
+      "_openid": "v1_user_001",
+      "moodCount": { "calm": 12, "happy": 5, "low": 2 },
+      "topKeywords": ["公园", "周报", "英语"],
+      "updatedAt": 1700002000000
+    }
+  ]
+}

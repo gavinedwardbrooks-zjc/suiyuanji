@@ -1,0 +1,14 @@
+<view class="mw">
+  <view class="row gap-s wrap">
+    <view wx:for="{{moods}}" wx:key="key" class="chip {{value.type === item.key ? 'on' : ''}}" data-k="{{item.key}}" bindtap="pickMood">
+      <image class="emo" src="{{item.src}}" mode="aspectFit" />
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+  <view class="row gap-s wrap" style="margin-top:16rpx;">
+    <view wx:for="{{weathers}}" wx:key="key" class="chip sm {{value.weather === item.key ? 'on' : ''}}" data-k="{{item.key}}" bindtap="pickWeather">
+      <image class="emo" src="{{item.src}}" mode="aspectFit" />
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+</view>

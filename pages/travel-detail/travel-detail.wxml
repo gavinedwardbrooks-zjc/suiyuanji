@@ -1,0 +1,87 @@
+<view class="page-pad">
+
+  <view wx:if="{{notFound}}" class="note-yellow mt-m empty-state">
+    <text class="empty-title">地点不存在</text>
+  </view>
+
+  <block wx:elif="{{place}}">
+    <view class="hero fade-in">
+      <view class="ht">{{place.name}}</view>
+      <view class="hs">{{place.type === 'beijing' ? '北京 · 默认 1 天' : (place.city + ' · 3 天 2 夜')}}</view>
+    </view>
+
+    <!-- 只读态 -->
+    <block wx:if="{{!editing}}">
+      <view class="note-pink mt-m">
+        <text class="section-title">简介</text>
+        <text class="intro-text">{{place.shortIntro}}</text>
+      </view>
+
+      <view class="note-blue mt-m">
+        <text class="section-title">亮点</text>
+        <view class="line-list">
+          <view wx:for="{{place.highlights}}" wx:key="index" class="line">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="note-yellow mt-m">
+        <text class="section-title">计划 · {{place.plan.title}}</text>
+        <view wx:for="{{place.plan.days}}" wx:for-item="d" wx:key="day" class="day-block">
+          <text class="day-title">Day {{d.day}} · {{d.title}}</text>
+          <view wx:for="{{d.items}}" wx:for-item="it" wx:key="period" class="item-row">
+            <text class="item-period">{{periodLabel[it.period]}}</text>
+            <view class="item-body">
+              <text class="item-title">{{it.title}}</text>
+              <text wx:if="{{it.description}}" class="item-desc">{{it.description}}</text>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{place.plan.tips.length}}" class="tips-block mt-s">
+          <text class="tips-label">小贴士</text>
+          <view wx:for="{{place.plan.tips}}" wx:key="index" class="tip-line">{{item}}</view>
+        </view>
+      </view>
+
+      <!-- V1.1 收尾：「AI 重新生成」入口已隐藏。
+           原因：该能力依赖云函数环境变量 AI_API_URL / AI_API_KEY（第三方付费接口），
+           未配置时 callAI 直接 reject → 每次都返回 AI_FAILED；
+           而要让它可用需要外部服务 + 密钥 + 更长的生成超时，超出本轮范围。
+           原实现（regenerate + regenerateTravelPlace）保留未删，配置好后可原样恢复入口。
+           「编辑计划」与已有行程内容不受影响。 -->
+      <view class="row mt-m">
+        <view class="btn-primary flex-1" bindtap="enterEdit">编辑计划</view>
+      </view>
+      <text wx:if="{{error}}" class="err-txt" style="display:block;text-align:center;margin-top:16rpx;">{{error}}</text>
+
+      <!-- stale-info 统一提示（紫色便签，温和提醒） -->
+      <view class="note-stripe note-purple mt-m stale-card">
+        <text class="stale-txt">行程仅供参考。开放时间、预约规则、票价及交通信息可能调整，出发前请以官方最新信息为准。</text>
+      </view>
+    </block>
+
+    <!-- 编辑态 -->
+    <block wx:else>
+      <view class="note-pink mt-m">
+        <text class="section-title">简介</text>
+        <textarea class="edit-area soft-input" value="{{draftIntro}}" bindinput="onIntro" auto-height />
+      </view>
+      <view class="note-blue mt-m">
+        <text class="section-title">亮点（每行一条）</text>
+        <textarea class="edit-area soft-input" value="{{draftHighlights}}" bindinput="onHighlights" auto-height />
+      </view>
+      <view class="note-yellow mt-m">
+        <text class="section-title">计划（Day N | 标题，下面每行：上午：标题（描述））</text>
+        <textarea class="edit-area tall soft-input" value="{{draftPlanDays}}" bindinput="onPlanDays" />
+      </view>
+      <view class="note-purple mt-m">
+        <text class="section-title">小贴士（每行一条）</text>
+        <textarea class="edit-area soft-input" value="{{draftTips}}" bindinput="onTips" auto-height />
+      </view>
+      <view class="row mt-m" style="gap:16rprx;">
+        <view class="btn-primary flex-1 {{saving ? 'disabled' : ''}}" bindtap="save">{{saving ? '保存中…' : '保存'}}</view>
+        <view class="btn-ghost flex-1" bindtap="cancelEdit">取消</view>
+      </view>
+    </block>
+  </block>
+
+</view>

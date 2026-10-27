@@ -1,0 +1,7 @@
+{
+  "name": "lifePlanner",
+  "version": "1.0.0",
+  "description": "M7 今天吃什么：50 道菜 seed/随机搭配/详情/编辑/AI 重新生成",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

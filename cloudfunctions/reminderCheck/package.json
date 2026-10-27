@@ -1,0 +1,7 @@
+{
+  "name": "reminderCheck",
+  "version": "1.0.0",
+  "description": "定时扫描未完成任务并发送订阅提醒",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

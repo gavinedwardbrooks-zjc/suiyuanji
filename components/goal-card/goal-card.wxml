@@ -1,0 +1,22 @@
+<view class="gc hand-border" style="border-color: {{color}}; background: {{color}}14;">
+  <view class="top row-between">
+    <view class="num" style="background: {{color}};">{{index + 1}}</view>
+    <view class="done-box {{goal.done ? 'on' : ''}}" style="border-color: {{color}}; color: {{color}};"
+          bindtap="onToggleDone">{{goal.done ? '✓' : ''}}</view>
+  </view>
+
+  <input class="ginput" placeholder="今天想完成的一件大事" value="{{goal.text}}" bindinput="onInput" />
+
+  <view class="remind row-between" bindtap="onToggleReminder">
+    <view class="row" style="gap:8rpx;">
+      <text class="rlabel">到点提醒</text>
+    </view>
+    <view class="switch {{goal.reminderOn ? 'on' : ''}}" style="--c: {{color}};">
+      <view class="knob"></view>
+    </view>
+  </view>
+
+  <picker wx:if="{{goal.reminderOn}}" mode="time" value="{{goal.reminderTime}}" bindchange="onTime">
+    <view class="time-pill" style="background: {{color}}55;">{{goal.reminderTime || '21:00'}} 提醒我</view>
+  </picker>
+</view>
