@@ -136,7 +136,14 @@ function App() {
       setCountdown(Math.max(0, Math.round((r.expiresAt - Date.now()) / 1000)));
       setLoginHint("用手机微信扫一扫，在小程序中确认登录");
     } catch (e) {
-      setError("连接服务失败，请稍后重试");
+      const code = String(e);
+      if (code.includes("AUTH_SERVICE_UNAVAILABLE")) {
+        setError("登录服务尚未配置（缺少桌面版服务端地址），暂时无法扫码登录");
+      } else if (code.includes("NETWORK_ERROR")) {
+        setError("连不上登录服务，请检查网络后重试");
+      } else {
+        setError("连接服务失败，请稍后重试");
+      }
       console.error("auth_start_login failed", e);
     } finally {
       setLoginBusy(false);

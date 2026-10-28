@@ -84,7 +84,8 @@ struct DesktopUiReadyPayload {
 #[cfg(windows)]
 fn apply_window_opacity(app: &tauri::AppHandle, value: f64) -> Result<f64, String> {
     use windows_sys::Win32::UI::WindowsAndMessaging::{
-        SetLayeredWindowAttributes, SetWindowLongW, GWL_EXSTYLE, LWA_ALPHA, WS_EX_LAYERED,
+        GetWindowLongW, SetLayeredWindowAttributes, SetWindowLongW, GWL_EXSTYLE, LWA_ALPHA,
+        WS_EX_LAYERED,
     };
 
     let clamped = value.clamp(0.2, 1.0);
@@ -98,10 +99,24 @@ fn apply_window_opacity(app: &tauri::AppHandle, value: f64) -> Result<f64, Strin
     let hwnd_raw: *mut core::ffi::c_void = hwnd.0 as *mut core::ffi::c_void;
     eprintln!("native opacity target hwnd={}", hwnd_raw as usize);
 
-    // 确保窗口带 WS_EX_LAYERED 扩展样式（SetLayeredWindowAttributes 的前置条件）
-    let ex = unsafe { SetWindowLongW(hwnd_raw, GWL_EXSTYLE, 0) };
-    unsafe {
-        SetWindowLongW(hwnd_raw, GWL_EXSTYLE, ex | WS_EX_LAYERED as i32);
+    // 读现有扩展样式。不能用 `SetWindowLongW(hwnd, GWL_EXSTYLE, 0)` 反取旧值：
+    // 那会把 WS_EX_APPWINDOW / WS_EX_WINDOWEDGE 等短暂清零，引起任务栏与重绘抖动。
+    let ex = unsafe { GetWindowLongW(hwnd_raw, GWL_EXSTYLE) };
+    let already_layered = (ex as u32 & WS_EX_LAYERED) != 0;
+
+    // 100% 不透明就是普通窗口，不需要 layered。
+    // WS_EX_LAYERED 会让 DWM 走分层合成路径，WebView2 的 DirectComposition 输出
+    // 在部分驱动/时序下进不了分层表面，表现就是整窗全黑。默认启动值正好是 1.0，
+    // 所以这里直接跳过；只有用户真把不透明度调到 100% 以下才启用分层。
+    if clamped >= 0.999 && !already_layered {
+        eprintln!("native opacity: 100% → 普通窗口（不启用 layered）");
+        return Ok(1.0);
+    }
+
+    if !already_layered {
+        unsafe {
+            SetWindowLongW(hwnd_raw, GWL_EXSTYLE, ex | WS_EX_LAYERED as i32);
+        }
     }
 
     // 0.2~1.0 → 51~255（alpha 0-255）
@@ -254,7 +269,19 @@ pub fn run() {
             let main_window = app
                 .get_webview_window("main")
                 .ok_or("main window not found during setup")?;
-            main_window.once("desktop-ui-ready", move |event| {
+
+            // 只处理**第一次** desktop-ui-ready。
+            //
+            // 不能直接用 `once`：React StrictMode 在开发模式下会把挂载 effect 执行两次，
+            // 前端因此连续 emit 两次；`once` 内部是一次性通道，第二次投递会命中
+            // tauri 的 listener.rs 断言并 panic（"attempted to call handler more than once"）。
+            // 换成 `listen` + 原子标志：重复投递被安静忽略，不会再 panic。
+            let ready_handled = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+            main_window.listen("desktop-ui-ready", move |event| {
+                if ready_handled.swap(true, std::sync::atomic::Ordering::SeqCst) {
+                    eprintln!("desktop-ui-ready ignored: already handled");
+                    return;
+                }
                 eprintln!("desktop-ui-ready received: {}", event.payload());
                 let payload = match serde_json::from_str::<DesktopUiReadyPayload>(event.payload()) {
                     Ok(payload) => payload,

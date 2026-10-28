@@ -15,6 +15,7 @@ const {
 const appTsx = read('desktop/src/App.tsx')
 const appCss = read('desktop/src/App.css')
 const libRs = read('desktop/src-tauri/src/lib.rs')
+const indexHtml = read('desktop/index.html')
 const transportRs = read('desktop/src-tauri/src/auth_transport.rs')
 const dailyFn = read('cloudfunctions/desktopDaily/index.js')
 
@@ -196,6 +197,22 @@ test('WINDOW_NATIVE_FEATURES_PRESERVED', () => {
   assert.match(appTsx, /set_current_window_opacity/)
   assert.match(appTsx, /setAlwaysOnTop/)
   assert.match(appCss, /slider|chip|presets/)
+})
+// 回归守卫：desktop-ui-ready 在开发模式下会被 React StrictMode 投递两次，
+// 用 once 注册会命中 tauri listener 的一次性通道断言并 panic。
+test('UI_READY_DUPLICATE_SAFE', () => {
+  assert.ok(!/\.once\(\s*"desktop-ui-ready"/.test(libRs), 'desktop-ui-ready 不得用 once 注册')
+  assert.match(libRs, /listen\("desktop-ui-ready"/, 'desktop-ui-ready 必须用 listen 注册')
+  assert.match(libRs, /AtomicBool/, '必须用原子标志忽略重复投递')
+})
+// 回归守卫：100% 不透明时不得给窗口加 WS_EX_LAYERED（WebView2 分层合成有整窗黑屏风险）
+test('LAYERED_ONLY_WHEN_TRANSLUCENT', () => {
+  assert.match(libRs, /clamped >= 0\.999 && !already_layered/, '100% 不透明必须跳过 layered')
+  assert.match(libRs, /GetWindowLongW/, '扩展样式必须读取，不能用 SetWindowLongW(.., 0) 反取')
+})
+// 回归守卫：JS 加载失败时窗口必须可读，而不是空白
+test('STATIC_BOOT_FALLBACK_PRESENT', () => {
+  assert.match(indexHtml, /id="root"[\s\S]*正在启动碎愿集/, '#root 内必须有静态启动兜底')
 })
 test('SAVE_LOADING_AND_DOUBLE_SUBMIT', () => {
   assert.match(appTsx, /if \(saving\) return/)

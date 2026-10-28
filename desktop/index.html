@@ -8,7 +8,24 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <!--
+      静态启动兜底：写在 #root 里，React 首次挂载时会整体清空并接管。
+      作用：如果 JS 包加载失败、或 React 挂载前抛异常，用户看到的是这句提示，
+      而不是一个全空/全黑的窗口——把「静默白屏」变成「可读的失败」。
+      样式必须内联（CSP 对 style 放宽到 unsafe-inline）。
+    -->
+    <div id="root">
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center;
+                  background: #f7eeda; color: #6b4f3a;
+                  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;">
+        <div style="text-align: center; line-height: 1.9;">
+          <p style="font-size: 18px; margin: 0;">正在启动碎愿集…</p>
+          <p style="font-size: 13px; color: #a08a72; margin: 8px 0 0;">
+            若长时间停留在此页，说明界面未能加载。
+          </p>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
