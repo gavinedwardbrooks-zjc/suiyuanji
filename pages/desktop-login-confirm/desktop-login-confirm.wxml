@@ -1,0 +1,60 @@
+<view class="page-pad confirm-page">
+
+  <!-- 检查中 / 请求中 -->
+  <view class="dl-card">
+    <view class="dl-head">
+      <view class="dl-title">电脑登录确认</view>
+      <view class="dl-sub">碎愿集 · Desktop</view>
+    </view>
+
+    <view class="dl-body">
+      <block wx:if="{{state === 'checking'}}">
+        <text class="dl-text">正在核实登录请求…</text>
+      </block>
+
+      <block wx:elif="{{state === 'ready'}}">
+        <text class="dl-text">正在尝试登录桌面版碎愿集</text>
+        <text class="dl-device" wx:if="{{deviceName}}">来自设备：{{deviceName}}</text>
+        <view class="dl-actions">
+          <button class="btn-primary" bindtap="confirmLogin">确认登录</button>
+          <button class="btn-ghost" bindtap="cancelLogin">取消</button>
+        </view>
+      </block>
+
+      <block wx:elif="{{state === 'confirming'}}">
+        <text class="dl-text">确认中…</text>
+      </block>
+
+      <block wx:elif="{{state === 'confirmed'}}">
+        <text class="dl-text dl-ok">已确认，可以回到电脑啦</text>
+      </block>
+
+      <block wx:elif="{{state === 'cancelling'}}">
+        <text class="dl-text">正在取消…</text>
+      </block>
+
+      <block wx:elif="{{state === 'cancelled'}}">
+        <text class="dl-text">已取消这次电脑登录</text>
+      </block>
+
+      <block wx:elif="{{state === 'expired'}}">
+        <text class="dl-text">链接已失效</text>
+        <text class="dl-sub">二维码可能已过期，请回到电脑重新生成</text>
+      </block>
+
+      <block wx:elif="{{state === 'invalid'}}">
+        <text class="dl-text">登录请求有误</text>
+        <text class="dl-sub">请回到电脑重新生成二维码后再扫一次</text>
+      </block>
+
+      <block wx:elif="{{state === 'error'}}">
+        <text class="dl-text">网络异常，请稍后重试</text>
+      </block>
+    </view>
+
+    <view class="dl-foot" wx:if="{{state === 'confirmed' || state === 'cancelled' || state === 'expired' || state === 'invalid'}}">
+      <button class="btn-ghost" bindtap="goBack">返回</button>
+    </view>
+  </view>
+
+</view>

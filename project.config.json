@@ -2,17 +2,58 @@
   "description": "碎愿集 - 微信小程序（云开发）",
   "packOptions": {
     "ignore": [
-      { "type": "folder", "value": "desktop" },
-      { "type": "folder", "value": "docs" },
-      { "type": "folder", "value": "tests" },
-      { "type": "folder", "value": "scripts" },
-      { "type": "folder", "value": ".workbuddy" },
-      { "type": "folder", "value": ".codebuddy" },
-      { "type": "folder", "value": ".git" },
-      { "type": "folder", "value": "cloudfunctions" },
-      { "type": "file", "value": "PRD-V2.md" },
-      { "type": "file", "value": "README.md" },
-      { "type": "file", "value": "project.private.config.json" }
+      {
+        "value": "desktop",
+        "type": "folder"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "tests",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
+      },
+      {
+        "value": ".workbuddy",
+        "type": "folder"
+      },
+      {
+        "value": ".codebuddy",
+        "type": "folder"
+      },
+      {
+        "value": ".git",
+        "type": "folder"
+      },
+      {
+        "value": ".local",
+        "type": "folder"
+      },
+      {
+        "value": "cloudfunctions",
+        "type": "folder"
+      },
+      {
+        "value": "PRD-V2.md",
+        "type": "file"
+      },
+      {
+        "value": "README.md",
+        "type": "file"
+      },
+      {
+        "value": "project.private.config.json",
+        "type": "file"
+      },
+      {
+        "value": "config.local.example.js",
+        "type": "file"
+      }
     ],
     "include": []
   },

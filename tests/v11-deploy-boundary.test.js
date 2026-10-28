@@ -2,7 +2,7 @@
 // tests/v11-deploy-boundary.test.js · 部署前文档与边界收尾（V1.1）
 //
 // 只守四件事，不测新功能（新功能在 v11-day-choice-todo.test.js）：
-//   1. DEPLOYMENT.md 的云函数清单与实际目录一致（开源包 11 个）
+//   1. DEPLOYMENT.md 的云函数清单与实际目录一致（11 小程序 + 5 桌面 = 16 个）
 //   2. 三个新增集合的建表 / 权限 / 索引口径齐全，且写明「不是云函数自动建表」
 //   3. 共同待办「100 条上限」与「查看全部」文案一致（说得出才敢说全部）
 //   4. 新写法的代码契约在本地能确认的部分（真云项不在本文件，见 DEPLOYMENT.md §8）
@@ -13,7 +13,7 @@
 //   [L3] 微信云环境真实请求 —— 未覆盖（云函数未上传）
 //   [L4] 开发者工具实际渲染 —— 未覆盖
 //
-// 注：开源包不含桌面端与 V2.1 账号体系的云函数，因此函数总数是 11 而不是私有仓库的 16。
+// 注：单仓库（Monorepo）已并入桌面端与 V2.1 账号体系的云函数，因此函数总数是 16。
 //
 // 运行：node tests/v11-deploy-boundary.test.js
 // ============================================================
@@ -113,16 +113,21 @@ async function main() {
   // ============================================================
   // E1–E3 文档口径（[L1]）
   // ============================================================
-  await testCase('[L1] E1 云函数数量口径统一：§4 写明 11 个，且 11 个都对得上真实目录', () => {
+  await testCase('[L1] E1 云函数数量口径统一：§4 写明 16 个（11 小程序 + 5 桌面），且都对得上真实目录', () => {
     assertNo(/9\s*个云函数/.test(doc), '文档仍存在「9 个云函数」')
+    assertNo(/共\s*11\s*个云函数/.test(doc), '§4 仍停留在 11 个（单仓库已含桌面云函数）')
     assertOk(/##\s*4\.\s*必需云函数部署/.test(doc), '§4 必需云函数部署缺失')
-    assertOk(/共\s*11\s*个云函数/.test(doc), '§4 必须写明 11 个云函数')
-    const list = 'login bindCouple dailyRecord getPartnerView menstrual aiSummary deleteAccount profileStats lifePlanner reminderCheck writing'.split(' ')
-    assertEq(list.length, 11, '清单本身应为 11 个')
+    assertOk(/共\s*16\s*个云函数/.test(doc), '§4 必须写明 16 个云函数')
+    const list = ('login bindCouple dailyRecord getPartnerView menstrual aiSummary deleteAccount '
+      + 'profileStats lifePlanner reminderCheck writing '
+      + 'desktopAuthPublic desktopAuthMiniapp desktopDaily userIdentity userUidMigration').split(' ')
+    assertEq(list.length, 16, '清单本身应为 16 个')
     for (const fn of list) {
       assertOk(doc.includes(fn), '文档缺函数 ' + fn)
       assertOk(fs.existsSync(path.join(ROOT, 'cloudfunctions', fn)), '仓库里没有云函数目录 ' + fn)
     }
+    // 桌面函数必须与小程序函数分组表述，避免新用户以为小程序也要部署它们
+    assertOk(/桌面端/.test(doc), '§4 必须说明哪些函数属于桌面端')
   })
 
   await testCase('[L1] E2 三个新集合写清「手动预建」：先建集合后传函数，且点明 -502005', () => {

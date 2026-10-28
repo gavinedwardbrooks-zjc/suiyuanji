@@ -62,6 +62,15 @@ App({
       this._loginError = 'no_cloud'
       return
     }
+    // 配置闸口（fail-closed）：CLOUD_ENV 仍是占位符时**不**初始化云能力。
+    // 绝不省略 env 参数让微信回落到「默认环境」—— 那可能静默连到不属于本项目的
+    // 线上环境。宁可停在可诊断的失败态，也不猜。
+    if (!CONFIG.isCloudEnvReady(CONFIG.CLOUD_ENV)) {
+      console.error('[config] 云环境 ID 未配置，已拒绝初始化云能力。' + CONFIG.configHint())
+      this._loginState = LOGIN_FAILED
+      this._loginError = 'cloud_env_missing'
+      return
+    }
     wx.cloud.init({ env: CONFIG.CLOUD_ENV, traceUser: true })
     this.silentLogin()
   },

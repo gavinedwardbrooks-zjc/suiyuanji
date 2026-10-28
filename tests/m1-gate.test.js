@@ -7,6 +7,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const { MockDB } = require('./mock-db')
+const { listPublishableFiles } = require('./private-terms.js')
 const core = require('../cloudfunctions/bindCouple/core')
 
 const ROOT = path.resolve(__dirname, '..')
@@ -273,23 +274,24 @@ async function runAll() {
   // C15 repo scan 找不到 AI Key
   await testCase('C15 全仓库扫描无 AI Key', async () => {
     const keyPatterns = [/sk-[A-Za-z0-9]{16,}/, /AI_API_KEY\s*[:=]\s*['"][^'"]{8,}/, /api[_-]?key\s*[:=]\s*['"][A-Za-z0-9]{16,}/i]
-    const skipDirs = ['node_modules', '.git', 'tests']
+    // 扫描口径统一到「一旦提交就会公开」的文件集合（tests/private-terms.js::listPublishableFiles）：
+    //   排除 依赖 / 构建产物（dist、target、gen）/ 本地私有目录（.local）/ 私人配置 / 内部资料。
+    // 与旧实现的差别只有两点，方向都是**更严**：
+    //   1) 不再进入 desktop/src-tauri/target 这类编译产物 —— 旧实现会扫 Cargo 指纹文件，
+    //      其中的随机串（如 task-03a8…）会撞出 sk- 形态的**假阳性**，与源码安全无关。
+    //   2) 不再跳过 tests/ —— 测试文件同样会被提交、同样会公开，必须照扫。
+    const files = listPublishableFiles(ROOT)
+    assert.ok(files.length > 100, '可发布文件枚举异常偏少，疑似枚举失效: ' + files.length)
     const hits = []
-    function walk(dir) {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        if (entry.isDirectory()) {
-          if (skipDirs.includes(entry.name)) continue
-          walk(path.join(dir, entry.name))
-        } else if (/\.(js|json|md|wxml|wxss|js)$/.test(entry.name)) {
-          const content = fs.readFileSync(path.join(dir, entry.name), 'utf8')
-          for (const p of keyPatterns) {
-            const m = content.match(p)
-            if (m) hits.push(entry.name + ' -> ' + m[0].slice(0, 40))
-          }
-        }
+    for (const rel of files) {
+      if (!/\.(js|json|md|wxml|wxss)$/.test(rel)) continue
+      let content
+      try { content = fs.readFileSync(path.join(ROOT, rel), 'utf8') } catch (e) { continue }
+      for (const p of keyPatterns) {
+        const m = content.match(p)
+        if (m) hits.push(rel + ' -> ' + m[0].slice(0, 40))
       }
     }
-    walk(ROOT)
     assert.strictEqual(hits.length, 0, '发现疑似密钥: ' + hits.join(', '))
   })
 

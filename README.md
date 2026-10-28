@@ -20,6 +20,7 @@
 | 共同待办 | 双方都能添加 / 勾选 / 删除，与个人小事完全分开 |
 | 记录分享 | 记录方可按日期把某一天的日记分享给伴侣（默认关闭，可随时撤销） |
 | AI 每日小结 | 每晚定时生成暖心总结（无 AI Key 时自动降级为内置模板） |
+| 桌面版（Windows） | 手机扫码登录，在电脑上读写当天的目标与小事；支持窗口透明度与置顶 |
 | 隐私 | 跨情侣数据隔离、解绑与重新绑定、数据删除与账号注销 |
 
 ---
@@ -28,6 +29,9 @@
 
 - **小程序端**：原生微信小程序（WXML / WXSS / JavaScript）
 - **后端**：微信云开发（云函数 + 云数据库 + 云存储），`wx-server-sdk`
+- **桌面端**：Tauri 2 + React 19 + Vite 7 + TypeScript + Rust（Windows）
+
+> 桌面端可选。不构建桌面端时，删掉本地的 `desktop/` 目录即可，小程序完全不受影响。
 
 ---
 
@@ -43,23 +47,43 @@
 
 微信开发者工具 → 导入项目 → 选择本目录 → 填入你的 AppID。
 
-### 3. 配置客户端 `config.js`
+> AppID 建议只在开发者工具里填。工具会把它写进 `project.private.config.json`
+> （已被 `.gitignore` 忽略、也不会打进安装包），仓库里的 `project.config.json`
+> 始终保持占位符 `wxYOUR_APPID`。**不要**为了让工具跑起来去改 `project.config.json`。
 
-打开项目根目录 `config.js`，替换为你的值：
+### 3. 生成本地私有配置
+
+仓库里的 `config.js` 只有占位符。真实的云环境 ID / 订阅模板 ID 放在
+**本机私有**的 `config.local.js`（已被 `.gitignore` 忽略，不会入库）：
+
+```bash
+node scripts/init-local-config.js        # 从 config.local.example.js 复制一份
+node scripts/init-local-config.js --check # 体检：文件在不在、是否还是占位符
+```
+
+然后编辑 `config.local.js`：
 
 | 配置项 | 说明 |
 |---|---|
-| `CLOUD_ENV` | 你的云开发环境 ID |
+| `CLOUD_ENV` | 你的云开发环境 ID（云开发控制台 → 设置 → 环境 ID） |
 | `SUB_TPL_CHAT` | 聊天消息通知订阅模板 ID |
 | `SUB_TPL_PERIOD` | 经期提醒订阅模板 ID |
+| `SUB_TPL_REMIND` / `SUB_TPL_SUMMARY` | 目标提醒 / AI 晚间小结模板（可留占位符） |
 
-> `config.js` 只放**非敏感**配置。AI Key 等密钥只允许出现在云函数环境变量中，禁止写入客户端 / 仓库。
+> `config.local.js` **必须先创建**才能跑起来。缺失时 `app.js` 会 fail-closed：
+> 拒绝初始化云能力、控制台打印配置指引 —— 它**不会**省略 `env` 参数让微信
+> 回落到默认环境（那可能连到不属于你的线上环境）。
+>
+> 分层红线：`config.js` / `config.local.js` 只放**客户端标识**；
+> AI Key、AppSecret 等服务端密钥只允许出现在云函数环境变量里。
 
 ### 4. 部署云函数
 
 `cloudfunctions/` 下每个文件夹右键 → **「上传并部署：云端安装依赖」**。
 
-核心云函数：`login` `bindCouple` `dailyRecord` `getPartnerView` `menstrual` `aiSummary` `deleteAccount`（另有 `profileStats` / `lifePlanner` / `reminderCheck` / `writing` 等可选，共 11 个）。
+核心云函数（小程序端 11 个）：`login` `bindCouple` `dailyRecord` `getPartnerView` `menstrual` `aiSummary` `deleteAccount` `profileStats` `lifePlanner` `reminderCheck` `writing`
+
+桌面端另有 5 个：`desktopAuthPublic` `desktopAuthMiniapp` `desktopDaily` `userIdentity` `userUidMigration`（不部署不影响小程序）。
 
 ### 5. 配置云函数环境变量
 
@@ -74,16 +98,37 @@
 
 ---
 
+## 桌面版（可选）
+
+仓库中的 `desktop/` 是一个 **Tauri 2 + React 19 + Rust** 的 Windows 桌面客户端，与小程序共用同一份云数据库。
+
+```powershell
+cd desktop
+npm install
+$env:DESKTOP_AUTH_BASE_URL = "https://<你的云环境地址>"
+npm run tauri dev
+```
+
+- 登录：手机打开小程序 → 「我的」→「电脑登录」→ 扫桌面端二维码 → 确认
+- 仓库内**不含任何真实云环境地址**，必须自行配置（见 [`desktop/README.md`](./desktop/README.md) §2）
+- 详细架构、云函数分工与安全模型见 [`desktop/README.md`](./desktop/README.md)
+
+---
+
 ## 目录结构
 
 ```
 ├── app.js / app.json / app.wxss   # 全局入口、tabBar、主题
-├── config.js                      # 客户端非敏感配置
+├── config.js                      # 客户端配置（只有安全占位符）
+├── config.local.example.js        # 本地私有配置模板（可提交）
+├── scripts/                       # 本地脚本（init-local-config.js 等）
 ├── pages/                         # home record reading calendar ours mine privacy …
+│   └── desktop-login-confirm/     # 桌面版扫码登录确认页
 ├── components/                    # todo-item score-picker goal-card …
 ├── assets/                        # 手绘插画（svg-icons，来源见 SOURCES.md）
-├── utils/                         # 工具模块
-├── cloudfunctions/                # 云函数（每个目录一个函数）
+├── utils/                         # 工具模块（含 desktop-qr.js 二维码解析）
+├── cloudfunctions/                # 云函数（每个目录一个函数，根级 .js 为共享模块）
+├── desktop/                       # Windows 桌面版（Tauri 2 + React 19 + Rust）
 └── tests/                         # 本地测试（Node，mock 云数据库）
 ```
 

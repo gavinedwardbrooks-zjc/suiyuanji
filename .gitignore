@@ -4,9 +4,31 @@ node_modules/
 .codebuddy/
 project.private.config.json
 
-# 桌面端（Tauri，含旧品牌 + 硬编码云端点，不公开）
-desktop/
+# ===== 本地私有配置（含真实云环境 ID / 订阅模板 ID，绝不入库）=====
+# 由 `node scripts/init-local-config.js` 从 config.local.example.js 生成。
+# 模板与生成脚本本身入库；真实值只留在这台机器上。
+config.local.js
+
+# ===== 内部资料（仅本地留存，永不发布）=====
+# 首发审计报告：含本机绝对路径、内部目录结构、过期统计与 `git add .` 示例。
+# 路径为仓库根锚定 + 单文件精确匹配，不影响其他公开文档。
+/docs/OPEN_SOURCE_RELEASE_REPORT.md
+
+# ===== 桌面端（Tauri + React + Rust）=====
+# 只排除构建缓存与「本地私有配置」，源码本身纳入版本管理。
+desktop/node_modules/
+desktop/dist/
+desktop/src-tauri/target/
 src-tauri/target/
+# Tauri 构建时自动生成的 ACL schema（capabilities 的 $schema 引用目标）
+desktop/src-tauri/gen/schemas/
+# 本机 Cargo 配置（含绝对路径；config.example.toml 可提交）
+desktop/.cargo/config.toml
+desktop/src-tauri/.cargo/config.toml
+# 桌面端运行时配置（含真实云环境地址，绝不入库）
+# 复制 desktop/desktop.config.example.json 后填入真实值，放在 exe 同目录。
+desktop/desktop.config.json
+desktop.config.json
 
 # ===== 开源整理新增 =====
 # 环境变量（本地私有；.env.example 为可提交模板）
@@ -21,9 +43,9 @@ logs/
 *.swp
 *.swo
 
-# IDE 配置
-.vscode/
-.idea/
+# IDE 配置（仅项目根，不影响 desktop/.vscode/extensions.json）
+/.vscode/
+/.idea/
 
 # 系统文件
 Thumbs.db
@@ -31,3 +53,9 @@ desktop.ini
 
 # 内部设计参考图（含 AI 水印，无再分发权，不公开）
 docs/style-references/
+
+# ===== 本地私有工作目录（报告 / 日志 / 临时文件，永不入库）=====
+# 项目产生的内部报告、调试日志、临时清单统一放这里，不再散落到 Windows 桌面。
+# 整目录忽略（不是逐文件登记）：新增报告/日志无需再改 .gitignore。
+# 目录初始不存在是正常的，需要时手动建立或用 scripts/init-local-config.js --check 查看。
+/.local/

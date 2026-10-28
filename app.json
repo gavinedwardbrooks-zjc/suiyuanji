@@ -10,6 +10,7 @@
     "pages/ours/ours",
     "pages/mine/mine",
     "pages/privacy/privacy",
+    "pages/desktop-login-confirm/desktop-login-confirm",
     "pages/food/food",
     "pages/recipe/recipe",
     "pages/travel/travel",

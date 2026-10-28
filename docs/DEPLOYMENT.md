@@ -6,8 +6,9 @@
 
 ## 1. 前置准备
 
-1. 注册微信小程序，获取 **AppID**（`project.config.json` 中的 `appid` 字段）。
-2. 开通微信云开发，记录 **云环境 ID**（`config.js` 中的 `CLOUD_ENV`）。
+1. 注册微信小程序，获取 **AppID**（在开发者工具「详情 → 基本信息」里填写，工具会写入本机
+   私有的 `project.private.config.json`；仓库里的 `project.config.json` 始终保持占位符）。
+2. 开通微信云开发，记录 **云环境 ID**（填进本地私有配置 `config.local.js` 的 `CLOUD_ENV`）。
 3. 在微信公众平台 → 订阅消息 → 我的模板，申请以下两类模板并记录模板 ID：
    - 「聊天消息通知」模板（心愿 / 悄悄话通知）
    - 「经期提醒」模板（预计经期前提醒）
@@ -76,9 +77,50 @@
 
 ## 4. 必需云函数部署
 
-`cloudfunctions/` 下共 11 个云函数，逐个右键 → **「上传并部署：云端安装依赖」**：
+`cloudfunctions/` 下共 16 个云函数，逐个右键 → **「上传并部署：云端安装依赖」**。
+
+**小程序端（11 个，必需）**
 
 `login` · `bindCouple` · `dailyRecord` · `getPartnerView` · `menstrual` · `aiSummary` · `deleteAccount` · `profileStats` · `lifePlanner` · `reminderCheck` · `writing`
+
+**桌面端（5 个，仅 Windows 桌面版需要）**
+
+`desktopAuthPublic` · `desktopAuthMiniapp` · `desktopDaily` · `userIdentity` · `userUidMigration`
+
+| 云函数 | 触发方式 | 作用 |
+| --- | --- | --- |
+| `desktopAuthPublic` | HTTP | 桌面端唯一登录入口（create / status / consume / validate / logout） |
+| `desktopAuthMiniapp` | 小程序 callFunction | 手机扫码后的 inspect / confirm / cancel，身份取自 `getWXContext().OPENID` |
+| `desktopDaily` | HTTP + Bearer | 读写 `daily_records` 的 `goals` / `todos` |
+| `userIdentity` | 小程序 callFunction | `openid → user_uid` 身份映射 |
+| `userUidMigration` | 手动调用 | 为历史用户补 `user_uid`（一次性工具，默认 dry-run） |
+
+> **未部署这 5 个函数不影响小程序任何功能**，只影响 Windows 桌面版能否登录。
+
+### 桌面端 HTTP 触发路径
+
+`desktopAuthPublic` 与 `desktopDaily` 需要在云开发控制台单独创建 HTTP 访问路径：
+
+| 云函数 | HTTP 路径 |
+| --- | --- |
+| `desktopAuthPublic` | `/desktop-auth` |
+| `desktopDaily` | `/desktop-daily` |
+
+建好后把基址（形如 `https://<环境ID>.<区域>.app.tcloudbase.com`）填进桌面端的
+`desktop.config.json`（见 `desktop/README.md` §2）。**该基址不要写进仓库。**
+
+### `cloudfunctions/` 根目录的 6 个 .js 文件是什么
+
+`loginSessionCore.js` · `desktopSessionCore.js` · `loginSessionRepository.js` ·
+`desktopSessionRepository.js` · `cloudLoginSessionRepository.js` ·
+`cloudDesktopSessionRepository.js`
+
+它们不是云函数，是**共享源码与测试锚点**：
+
+- 各云函数目录内有同名副本（云函数必须独立打包，不能跨目录 require）；
+- 根目录 `tests/` 直接 `require` 它们做单元测试。
+
+修改这些模块时，请同步更新对应的云函数目录副本，否则会出现「测试通过但线上跑的是旧逻辑」。
 
 > 每个云函数独立打包，运行时代码不得跨云函数目录 `require('../其他函数')`（见 `tests/deploy-isolation.test.js`）。
 

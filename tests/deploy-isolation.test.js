@@ -46,7 +46,21 @@ const funcNames = fs.readdirSync(FUNCS_DIR, { withFileTypes: true })
 console.log('\n=== 云函数部署隔离测试 ===')
 console.log('扫描云函数目录:', funcNames.join(', '))
 
-check('发现全部 11 个云函数目录', funcNames.length === 11, '实际 ' + funcNames.length + ' : ' + funcNames.join(', ') )
+// 云函数目录白名单：新增云函数必须在此登记，防止未登记的函数被悄悄部署。
+// 11 个小程序端 + 5 个桌面端（desktopAuthMiniapp / desktopAuthPublic / desktopDaily /
+// userIdentity / userUidMigration）= 16。
+const EXPECTED_FUNCS = [
+  'aiSummary', 'bindCouple', 'dailyRecord', 'deleteAccount',
+  'desktopAuthMiniapp', 'desktopAuthPublic', 'desktopDaily',
+  'getPartnerView', 'lifePlanner', 'login', 'menstrual',
+  'profileStats', 'reminderCheck', 'userIdentity', 'userUidMigration', 'writing'
+]
+
+check(
+  '云函数目录与已登记的 16 个函数完全一致',
+  funcNames.length === EXPECTED_FUNCS.length && EXPECTED_FUNCS.every(n => funcNames.includes(n)),
+  '实际 ' + funcNames.length + ' : ' + funcNames.join(', ')
+)
 
 for (const fn of funcNames) {
   const fnDir = path.join(FUNCS_DIR, fn)

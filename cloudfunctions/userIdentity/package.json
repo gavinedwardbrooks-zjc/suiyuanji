@@ -1,0 +1,7 @@
+{
+  "name": "userIdentity",
+  "version": "1.0.0",
+  "description": "V2.1-3 internal user_uid identity foundation",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "~2.6.3" }
+}

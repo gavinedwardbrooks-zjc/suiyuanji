@@ -1,0 +1,7 @@
+{
+  "_note": "本文件是示例模板。复制为同目录下的 desktop.config.json 并填入真实地址后再运行桌面版。",
+  "_note_gitignore": "desktop.config.json 已被 .gitignore 忽略，不会被提交；本 example 文件可以提交。",
+  "_note_format": "authBaseUrl 必须是以 https:// 开头的基址（生产环境强制 HTTPS）；本地联调可写 http://localhost:3000 并同时设置环境变量 DESKTOP_AUTH_PRODUCTION=0。",
+  "_note_priority": "解析优先级：环境变量 DESKTOP_AUTH_BASE_URL > 本文件 authBaseUrl > 空（此时桌面端所有联网命令返回 AUTH_SERVICE_UNAVAILABLE）。",
+  "authBaseUrl": "https://YOUR_CLOUD_ENV_ID.YOUR_REGION.app.tcloudbase.com"
+}

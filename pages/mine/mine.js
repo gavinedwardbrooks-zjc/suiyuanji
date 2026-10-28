@@ -1,7 +1,6 @@
 const app = getApp()
-
-// 订阅消息模板 ID 列表（提醒 + 小结），在微信公众平台创建后替换
-const SUB_TPLS = ['TEMPLATE_ID_HERE']
+const CONFIG = require('../../config')
+const { parseDesktopLoginResult } = require('../../utils/desktop-qr')
 
 function bindErrorMessage(code) {
   return ({
@@ -260,9 +259,37 @@ Page({
       })
   },
 
+  // Desktop 登录：扫桌面二维码 → 校验 → 进入确认页（用户必须点确认，不扫码即 approve）
+  scanDesktopLogin() {
+    if (this.data.acting) return
+    wx.scanCode({
+      onlyFromCamera: true,
+      success: (res) => {
+        const parsed = parseDesktopLoginResult(res && res.result)
+        if (!parsed.ok) {
+          wx.showToast({ title: '不是有效的电脑登录二维码', icon: 'none' })
+          return
+        }
+        // 只透传原始扫码文本，由确认页二次解析校验（fail-closed）
+        wx.navigateTo({
+          url: '/pages/desktop-login-confirm/desktop-login-confirm?q=' + encodeURIComponent(res.result)
+        })
+      },
+      fail: () => { /* 用户取消扫码，无动作 */ }
+    })
+  },
+
   authSubscribe() {
+    // 模板 ID 统一来自配置层（config.js 默认占位符 + 本地 config.local.js 覆盖）。
+    // 未配置时不发请求：拿占位符去申请授权只会得到无意义的失败提示。
+    const tmplIds = CONFIG.subscribeTmplIds()
+    if (!tmplIds.length) {
+      console.warn('[config] 未配置订阅消息模板 ID，已跳过授权（见 config.local.example.js）')
+      wx.showToast({ title: '提醒暂未开放', icon: 'none' })
+      return
+    }
     wx.requestSubscribeMessage({
-      tmplIds: SUB_TPLS,
+      tmplIds,
       success: () => wx.showToast({ title: '已开启提醒' }),
       fail: () => {}
     })

@@ -1,0 +1,22 @@
+# 碎愿集 Desktop — Cargo 配置示例（团队可复制）
+#
+# 用法：把本文件复制为同目录下的 config.toml（.cargo/config.toml），
+#       并把 target-dir 改成你本机的实际路径。
+#
+# 目的：把 Rust/Tauri 编译缓存（target）从系统盘/项目目录移走，
+#       避免重复构建把数 GB 写入 C 盘。
+#
+# 说明：
+#   - target-dir 是机器专属路径，提交到仓库前请改为示例值（如
+#     D:/your-build-cache/tauri-target 或 /home/you/build-cache/tauri-target）。
+#   - 正斜杠优先，避免 TOML 反斜杠转义问题。
+#   - 若不想迁移，直接删除本文件即可（cargo 回退到默认 target/）。
+
+[build]
+# 示例：Windows
+# target-dir = "D:/your-build-cache/tauri-target"
+# 示例：macOS / Linux
+# target-dir = "/Users/you/build-cache/tauri-target"
+
+# 默认（未迁移）时注释掉上一行即可：
+# target-dir = "target"

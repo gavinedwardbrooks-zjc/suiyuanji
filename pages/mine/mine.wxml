@@ -49,6 +49,13 @@
     </view>
   </view>
 
+  <!-- Desktop 电脑登录（V2.1 Phase 1.5 扫码入口） -->
+  <view class="card block">
+    <text class="section-title">电脑登录</text>
+    <text class="muted small" style="margin-top:14rpx;display:block;">用手机扫桌面版「碎愿集」的二维码，授权这台电脑读写你今天的记录。</text>
+    <view class="mini-btn desktop-scan-btn" bindtap="scanDesktopLogin">扫一扫 · 电脑登录</view>
+  </view>
+
   <view class="card block">
     <text class="section-title">消息提醒</text>
     <text class="muted small">开启后，目标到点未完成会收到温柔提醒，每晚收到 AI 小结。</text>
