@@ -5,6 +5,7 @@ class DesktopSessionRepository {
   async findByLoginSessionId() { throw new Error('NOT_IMPLEMENTED') }
   async transitionStatus() { throw new Error('NOT_IMPLEMENTED') }
   async updateLastSeen() { throw new Error('NOT_IMPLEMENTED') }
+  async rotateToken() { throw new Error('NOT_IMPLEMENTED') }
 }
 class InMemoryDesktopSessionRepository extends DesktopSessionRepository {
   constructor({ delayMs = 0 } = {}) { super(); this.records = new Map(); this.byLoginSession = new Map(); this.failCreate = false; this.delayMs = delayMs }
@@ -15,5 +16,6 @@ class InMemoryDesktopSessionRepository extends DesktopSessionRepository {
   async findByLoginSessionId(id) { await this.wait(); const sid = this.byLoginSession.get(id); return sid ? this.get(sid) : null }
   async transitionStatus(id, expected, next, patch = {}) { await this.wait(); const r = this.records.get(id); if (!r || r.status !== expected) return false; r.status = next; Object.assign(r, JSON.parse(JSON.stringify(patch))); return true }
   async updateLastSeen(id, expected, value) { await this.wait(); const r = this.records.get(id); if (!r || r.status !== expected) return false; r.lastSeenAt = value; return true }
+  async rotateToken(id, expected, expectedTokenHash, tokenHash, lastSeenAt) { await this.wait(); const r = this.records.get(id); if (!r || r.status !== expected || r.tokenHash !== expectedTokenHash) return false; r.tokenHash = tokenHash; r.lastSeenAt = lastSeenAt; return true }
 }
 module.exports = { DesktopSessionRepository, InMemoryDesktopSessionRepository }

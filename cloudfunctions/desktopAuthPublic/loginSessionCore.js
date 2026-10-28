@@ -74,6 +74,15 @@ async function getLoginSessionStatus({ repo, sessionId, pollSecret, now = Date.n
   const status = record.status === STATUS.APPROVED && now >= record.expiresAt ? STATUS.EXPIRED : record.status
   return { status, expiresAt: record.expiresAt }
 }
+// 只校验「这是这台桌面的会话」，不要求 status 仍为 approved。
+// 用途：consume 的响应在网络层丢失后，同一台桌面凭 loginSessionId + pollSecret
+// 恢复会话（login session 此时已是 consumed，不能再走 consume 的状态机）。
+// 二维码里只有 sid + nonce、没有 pollSecret，因此拍照截图无法通过这一关。
+async function assertPollSecret({ repo, sessionId, pollSecret, now = Date.now() }) {
+  const record = await load(repo, sessionId, now)
+  verifyPollSecret(record, pollSecret)
+  return record
+}
 async function consumeLoginSession({ repo, sessionId, pollSecret, now = Date.now() }) {
   const record = await load(repo, sessionId, now); verifyPollSecret(record, pollSecret)
   if (now >= record.expiresAt) throw new Error('SESSION_EXPIRED')
@@ -81,4 +90,4 @@ async function consumeLoginSession({ repo, sessionId, pollSecret, now = Date.now
   if (!await repo.transition(sessionId, STATUS.APPROVED, STATUS.CONSUMED, { consumedAt: now })) throw new Error('SESSION_NOT_APPROVED')
   return { consumed: true, user_uid: record.user_uid }
 }
-module.exports = { LOGIN_SESSION_TTL_MS, STATUS, TRANSITIONS, hashSecret, safeEqualHash, createLoginSession, inspectLoginSession, confirmLoginSession, cancelLoginSession, supersedeLoginSession, getLoginSessionStatus, consumeLoginSession }
+module.exports = { LOGIN_SESSION_TTL_MS, STATUS, TRANSITIONS, hashSecret, safeEqualHash, createLoginSession, inspectLoginSession, confirmLoginSession, cancelLoginSession, supersedeLoginSession, getLoginSessionStatus, consumeLoginSession, assertPollSecret }

@@ -29,8 +29,30 @@ async function revokeDesktopSession({ repo, token, now = Date.now() }) {
   return { revoked: true }
 }
 async function consumeAndCreateDesktopSession({ loginCore, loginRepo, desktopRepo, loginSessionId, pollSecret, deviceId, deviceName, now = Date.now() }) {
-  assertString('loginSessionId', loginSessionId, 256); const existing = desktopRepo.findByLoginSessionId && await desktopRepo.findByLoginSessionId(loginSessionId)
-  if (existing) return { token: null, expiresAt: existing.expiresAt, alreadyCreated: true, desktopSessionId: existing.desktopSessionId }
+  assertString('loginSessionId', loginSessionId, 256)
+  const existing = desktopRepo.findByLoginSessionId && await desktopRepo.findByLoginSessionId(loginSessionId)
+  if (existing) {
+    // 上一次 consume 已经建好 desktop session，但响应在网络上丢了（客户端没收到 token）。
+    // 此时 login session 已是 consumed，不能再走状态机；唯一能恢复的凭据是
+    // loginSessionId + pollSecret，而 pollSecret 只存在于发起登录的那台桌面内存里
+    // （二维码只有 sid + nonce）⇒ 先验 pollSecret，再换发新 token，旧 token 立即失效。
+    if (!loginCore.assertPollSecret) throw new Error('DESKTOP_SESSION_ALREADY_USED')
+    const loginRecord = await loginCore.assertPollSecret({ repo: loginRepo, sessionId: loginSessionId, pollSecret, now })
+    // 换发窗口 = **登录会话自身的有效期**（5 分钟），不是 desktop session 的 30 天。
+    // 响应丢失后的重试发生在秒级，5 分钟足够；一旦越过这个窗口就一律拒绝，
+    // 否则 pollSecret 会变成 30 天内可无限换发 token 的长期凭据（无限续期）。
+    if (!loginRecord || now >= loginRecord.expiresAt) throw new Error('DESKTOP_SESSION_ALREADY_USED')
+    if (existing.status !== 'active' || now >= existing.expiresAt) throw new Error('DESKTOP_SESSION_ALREADY_USED')
+    const rotatedToken = random(32)
+    // CAS 同时比对旧 tokenHash：并发重放时只有一个请求能换发成功，
+    // 不会出现「两个请求都收到新 token、其中一个立刻失效」的假成功。
+    if (!desktopRepo.rotateToken ||
+      !await desktopRepo.rotateToken(existing.desktopSessionId, 'active', existing.tokenHash, hashToken(rotatedToken), now)) {
+      throw new Error('DESKTOP_SESSION_ALREADY_USED')
+    }
+    // expiresAt 原样带回：换发只是「同一张票换个号码」，**不续期**。
+    return { token: rotatedToken, expiresAt: existing.expiresAt, desktopSessionId: existing.desktopSessionId, rotated: true }
+  }
   const consumed = await loginCore.consumeLoginSession({ repo: loginRepo, sessionId: loginSessionId, pollSecret, now })
   try {
     const created = createDesktopSession({ user_uid: consumed.user_uid, deviceId, deviceName, now, loginSessionId })

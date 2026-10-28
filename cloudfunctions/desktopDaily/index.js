@@ -24,7 +24,7 @@ function response(statusCode, body) {
 }
 
 const ALLOWED_CODES = [
-  'INVALID_DESKTOP_SESSION', 'BAD_ARGS', 'REV_CONFLICT', 'USER_NOT_FOUND',
+  'INVALID_DESKTOP_SESSION', 'BAD_ARGS', 'REV_CONFLICT', 'USER_NOT_FOUND', 'INVALID_ACTION',
   'METHOD_NOT_POST', 'BODY_TOO_LARGE', 'INVALID_JSON', 'DATE_INVALID'
 ]
 function safeError(error) {
@@ -48,6 +48,10 @@ function assertDate(date) {
 }
 
 // goals：白名单 { text<=100, done, reminderOn, reminderTime<=8 }，最多 10 项
+// reminded 是 **服务端状态**，由 reminderCheck 在「已发送提醒后」写入（{...g, reminded:true}），
+// 桌面客户端**不可写**：一旦接受客户端值，就等于允许伪造（抑制自己的提醒）
+// 或重置（reminderCheck 会重复推送，消耗用户一次性订阅消息额度）。
+// ⇒ 客户端传什么这里都归一化为 false，再用 inheritReminded() 从旧记录继承。
 function sanitizeGoals(goals) {
   if (!Array.isArray(goals)) throw new Error('BAD_ARGS')
   if (goals.length > 10) throw new Error('BAD_ARGS')
@@ -57,8 +61,32 @@ function sanitizeGoals(goals) {
       text: typeof g.text === 'string' ? g.text.slice(0, 100) : '',
       done: g.done === true,
       reminderOn: g.reminderOn === true,
-      reminderTime: typeof g.reminderTime === 'string' ? g.reminderTime.slice(0, 8) : '21:00'
+      reminderTime: typeof g.reminderTime === 'string' ? g.reminderTime.slice(0, 8) : '21:00',
+      reminded: false
     }
+  })
+}
+
+// 目标的「同一性」：内容 + 提醒时刻。文本或提醒时刻一变，就是另一条目标，
+// 理应重新提醒一次；只有完全相同的目标才继承「今天已经提醒过」。
+function goalKey(g) { return String(g && g.text || '') + '\u0000' + String(g && g.reminderTime || '') }
+
+// 把服务端旧记录里 reminded:true 的目标「按多重集」搬回新数组：
+// 同文本同提醒时刻出现 N 次就最多继承 N 次，不会因为数组重排 / 增删而串到别的目标上。
+function inheritReminded(next, previous) {
+  const pool = new Map()
+  for (const g of (Array.isArray(previous) ? previous : [])) {
+    if (!g || g.reminded !== true) continue
+    const k = goalKey(g)
+    pool.set(k, (pool.get(k) || 0) + 1)
+  }
+  if (pool.size === 0) return next
+  return next.map(g => {
+    const k = goalKey(g)
+    const left = pool.get(k) || 0
+    if (left <= 0) return g
+    pool.set(k, left - 1)
+    return { ...g, reminded: true }
   })
 }
 
@@ -141,10 +169,13 @@ exports.main = async (event = {}) => {
       const date = body.date
       const requestId = body.requestId
       const clientRevision = typeof body.revision === 'number' ? body.revision : 0
-      const goals = sanitizeGoals(body.goals)
+      const clientGoals = sanitizeGoals(body.goals)
       const todos = sanitizeTodos(body.todos)
 
       const existing = (await col.where({ _openid: openid, date }).get()).data[0]
+
+      // reminded 只能由服务端（reminderCheck）写：保存时从旧记录继承，客户端提交的值无效。
+      const goals = inheritReminded(clientGoals, existing && existing.goals)
 
       // 幂等：同 date 同 requestId 已处理 → 直接返回当前 revision
       if (existing && existing.lastRequestId === requestId) {
@@ -196,7 +227,9 @@ exports.main = async (event = {}) => {
       return response(200, { ok: true, revision: existing.revision + 1 })
     }
 
-    return response(400, { ok: false, code: 'INVALID_LOGIN_REQUEST' })
+    // 未知 action：明确 400 + 稳定 code（此前走安全兜底会变成 500 INTERNAL_ERROR，
+    // 让「客户端拼错 action」看起来像服务端故障）
+    return response(400, { ok: false, code: 'INVALID_ACTION' })
   } catch (error) {
     const code = safeError(error)
     return response(code === 'INTERNAL_ERROR' ? 500 : 400, { ok: false, code })

@@ -136,8 +136,8 @@ fn call(state: &AuthState, request: &RequestBody<'_>, token: Option<&str>, produ
     let client = Client::builder().timeout(Duration::from_secs(8)).build().map_err(|_| "AUTH_SERVICE_UNAVAILABLE")?;
     let mut req = client.post(url).header("content-type", "application/json").json(request);
     if let Some(value) = token { req = req.bearer_auth(value); }
-    // 临时开发诊断：仅打印 url 与底层错误；不打印 body/pollSecret/token/nonce，
-    // 协议零改动，UI 仍只收到 NETWORK_ERROR（2026-09-08 debug 用，勿提交）
+    // 诊断日志：只打印 URL 与底层传输错误，绝不打印 body / pollSecret / nonce / token。
+    // 协议零改动，前端仍只收到 NETWORK_ERROR。
     let response = req.send().map_err(|e| {
         eprintln!("desktop auth request failed: url={}, error={:?}", log_url, e);
         "NETWORK_ERROR"
@@ -153,7 +153,9 @@ fn call(state: &AuthState, request: &RequestBody<'_>, token: Option<&str>, produ
 fn map_code(code: Option<&str>) -> String {
     match code.unwrap_or("") {
         "INVALID_DESKTOP_SESSION" => "DESKTOP_SESSION_INVALID",
-        "INVALID_LOGIN_REQUEST" | "SESSION_EXPIRED" | "SESSION_NOT_APPROVED" => "LOGIN_REQUEST_INVALID",
+        // DESKTOP_SESSION_ALREADY_USED：这条 login session 已经换过 desktop session
+        // 且无法再换发 token（已撤销/已过期）⇒ 对用户而言就是「登录已失效，请重新扫码」。
+        "INVALID_LOGIN_REQUEST" | "SESSION_EXPIRED" | "SESSION_NOT_APPROVED" | "DESKTOP_SESSION_ALREADY_USED" => "LOGIN_REQUEST_INVALID",
         _ => "AUTH_SERVICE_UNAVAILABLE",
     }.into()
 }
@@ -217,5 +219,5 @@ mod tests {
     #[test]
     fn only_local_http_allowed_in_dev() { assert!(endpoint("http://localhost:3000", false).is_ok()); assert!(endpoint("http://example.test", false).is_err()); }
     #[test]
-    fn error_mapping_is_safe() { assert_eq!(map_code(Some("INVALID_DESKTOP_SESSION")), "DESKTOP_SESSION_INVALID"); assert_eq!(map_code(Some("db stack")), "AUTH_SERVICE_UNAVAILABLE"); }
+    fn error_mapping_is_safe() { assert_eq!(map_code(Some("INVALID_DESKTOP_SESSION")), "DESKTOP_SESSION_INVALID"); assert_eq!(map_code(Some("DESKTOP_SESSION_ALREADY_USED")), "LOGIN_REQUEST_INVALID"); assert_eq!(map_code(Some("db stack")), "AUTH_SERVICE_UNAVAILABLE"); }
 }
