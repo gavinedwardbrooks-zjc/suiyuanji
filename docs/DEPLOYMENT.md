@@ -2,6 +2,10 @@
 
 > 本文为开源模板的部署清单。所有生产环境标识（AppID、云环境 ID、订阅模板 ID）均以占位符标注，**部署前请替换为你自己的值**。请勿提交任何真实密钥或真实数据。
 
+**相关文档**：[架构说明](./ARCHITECTURE.md) · [开发环境](./DEVELOPMENT.md) ·
+[云函数说明](./CLOUD_FUNCTIONS.md) · [数据模型](./DATA_MODEL.md) ·
+[桌面版交接](./DESKTOP_HANDOVER.md) · [安全策略](../SECURITY.md)
+
 ---
 
 ## 1. 前置准备

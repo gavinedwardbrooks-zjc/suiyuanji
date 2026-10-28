@@ -11,10 +11,13 @@
 #   2) This script was NOT executed on this dev machine
 #      (tcb is not installed, no credentials present).
 #      Before running, install the CLI and log in, then verify
-#      each command's exact syntax (see report).
+#      each command's exact syntax (see docs/DEPLOYMENT.md section 3).
 #   3) RECOMMENDED alternative: create indexes manually in the
 #      WeChat DevTools cloud console (Database -> collection ->
-#      Index Management). See docs/V1_INDEX_UPLOAD_GUIDE.md.
+#      Index Management). See docs/DEPLOYMENT.md section 3.
+#   4) This script covers only 4 of the 6 business indexes; the two
+#      newer ones (wishes.wishDate, couple_todos) must be created
+#      manually. See docs/CLOUD_FUNCTIONS.md section 10.
 # ============================================================
 $ErrorActionPreference = "Stop"
 $EnvId = "<your-env-id>"
